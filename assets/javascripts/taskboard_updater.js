@@ -6,13 +6,17 @@ RB.TaskboardUpdater = RB.Object.create(RB.BoardUpdater, {
     // Process tasks
     var items = RB.$(data).find('.task');
     items.each(function(i, v){
-      self.processItem(v, false);
+      try {
+        self.processItem(v, false);
+      } catch(e) {}
     });
 
     // Process impediments
-    var items = RB.$(data).find('.impediment');
+    items = RB.$(data).find('.impediment');
     items.each(function(i, v){
-      self.processItem(v, true);
+      try {
+        self.processItem(v, true);
+      } catch(e) {}
     });
   },
   
@@ -23,7 +27,7 @@ RB.TaskboardUpdater = RB.Object.create(RB.BoardUpdater, {
     var newCell;
     var idPrefix = '#issue_';
     
-    if(RB.$(idPrefix + update.getID()).length==0){
+    if(RB.$(idPrefix + update.getID()).length===0){
       target = update;                                     // Create a new item
     } else {
       target = RB.$(idPrefix + update.getID()).data('this');  // Re-use existing item
@@ -39,11 +43,14 @@ RB.TaskboardUpdater = RB.Object.create(RB.BoardUpdater, {
       newCell.prepend(target.$);
     }
 
+    //update tooltip
+    RB.util.refreshToolTip(target);
+
     target.$.effect("highlight", { easing: 'easeInExpo' }, 4000);
   },
   
   start: function(){
-    this.params = 'only=tasks,impediments';    
+    this.params = 'only=tasks,impediments&sprint='+RB.constants.sprint_id;
     this.initialize();
   }
 

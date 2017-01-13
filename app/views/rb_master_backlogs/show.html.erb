@@ -1,9 +1,63 @@
 <!-- MASTER BACKLOG VIEW -->
+<%# early javascript before common.hs %>
+<%- controller.rb_jquery_plugins = capture do %>
+  <%= javascript_include_tag(
+    'jquery/jquery.qtip.pack.js',
+    'jquery/jquery.qtip.setup.js',
+    'jquery/jquery.liveFilter.js',
+    'jquery/jquery.liveFilter.setup.js',
+    'jquery/jquery.multiselect.js',
+    :plugin => 'redmine_backlogs') %>
+<%- end %>
 <%- content_for :head_tags do %>
-  <script type="text/javascript" src="<%= url_for(:controller => 'rb_server_variables', :action => 'show', :project_id => @project.identifier, :format => :js) %>"></script>
-  <%= javascript_include_tag 'master_backlog', 'backlog', 'model', 'editable_inplace', 'sprint', 'issue', 'story', 'board_updater', 'master_backlog_updater', 'burndown', :plugin => 'redmine_backlogs' %>
+  <script type="text/javascript"
+          src="<%= url_for(:controller => 'rb_server_variables',
+                           :action => 'project',
+                           :project_id => @project.identifier,
+                           :context => 'backlogs',
+                           :format => 'js') %>">
+  </script>
+
+  <%= javascript_include_tag(
+    'master_backlog',
+    'backlog',
+    'backlog_options',
+    'model',
+    'editable_inplace',
+    'sprint',
+    'release',
+    'issue',
+    'story',
+    'board_updater',
+    'master_backlog_updater',
+    :plugin => 'redmine_backlogs') %>
+  <%= stylesheet_link_tag 'jquery/jquery.qtip.css', :plugin => 'redmine_backlogs' %>
+  <%= stylesheet_link_tag 'jquery/jquery.multiselect.css', :plugin => 'redmine_backlogs' %>
   <%= stylesheet_link_tag 'master_backlog.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
   <%= stylesheet_link_tag 'master_backlog_print.css', :plugin => 'redmine_backlogs', :media => 'print' %>
+  <script type="text/javascript">RB.$(document).ready(function() { RB.$("#livefilter_controll").focus(); });</script>
+  <!--[if IE]>
+  <script type="text/javascript">
+    RB.$(document).ready(function() {
+      RB.$("#backlogs_container ul").each(function() {
+        RB.$(this).find('li:odd').css('background-color', '#dddddd');
+      });
+    });
+  </script>
+  <![endif]-->
+  <style type="text/css">
+    <% unless User.current.allowed_to?(:update_stories, @project) %>
+      #backlogs_container .stories .story{cursor:default;}
+    <% end %>
+    <% unless User.current.allowed_to?(:update_sprints, @project) %>
+      #backlogs_container .header .model.headertext{cursor:default;}
+    <% end %>
+    <% if Backlogs.setting[:show_project_name] != 'enabled' %>
+      .fff-middle{ margin-left:56px; } /*this should be dynamic*/
+      .fff-left{ width: 56px; }
+      #backlogs_container .stories .story .project{ display:none; }
+    <% end %>
+  </style>
 <%- end %>
 
 <%- content_for :breadcrumbs do %>
@@ -11,22 +65,31 @@
 <%- end %>
 
 <%- content_for :view_specific_links do %>
-  <a id="project_info">Info</a>
+  <input class="filter" name="livefilter" type="text" value="" id="livefilter_controll" />
+  <!-- disabled in javascript, so useless for now: a id="project_info">Info</a -->
   <a id="disable_autorefresh">Disable Auto-refresh</a>
   <a id="refresh">Refresh</a>
+  <a id="multiline">Multiline</a>
 <%- end %>
 
 <%- content_for :main do %>
   <div id="backlogs_container">
-    <div id="product_backlog_container">
-      <%= render :partial => 'backlog', :object => @product_backlog %>
-    </div>
-    <div id="top_sprint_backlogs_container">
-      <div id="sprint_backlogs_container">
+  <div class="backlogs-panel-wrapper">
+    <div class="backlogs-panel left-col">
+      <div id="sprint_backlogs_container" class="backlogs-panel-inner">
         <%= render :partial => 'backlog', :collection => @sprint_backlogs %>
       </div>
+		  <div><a id="show_completed_sprints"><%= l(:label_show_completed_sprints) %></a></div>
+		  <div id="closed_sprint_backlogs_container" style="display:none"></div>
       <div id="dummy_backlog_container"></div>
     </div>
+    <div class="backlogs-panel right-col">
+      <div id="product_backlog_container" class="backlogs-panel-inner">
+        <%= render :partial => 'backlog', :collection => @release_backlogs, :locals => {:cls => ' release_backlog'} %>
+        <%= render :partial => 'backlog', :object => @product_backlog, :locals => {:cls => ' product_backlog'} %>
+      </div>
+    </div>
+  </div>
   </div>
 
 <%- end %>

@@ -1,113 +1,221 @@
---- 
-es: 
+---
+es:
   backlogs_active: activo
-  backlogs_any: todos
-  backlogs_card_specification: Etiquetas para impresion de tarjetas
+  backlogs_any: cualquiera
+  backlogs_auto_assign_task: "Asignar automáticamente la tarea al usuario actual"
+  backlogs_burndown_print_height: "Altura de impresión del Burndown"
+  backlogs_burndown_print_width: "Anchura de impresión del Burndown"
+  backlogs_burndown_settings: "Configuración del Burndown"
+  backlogs_card_specification: "Tipos de etiqueta para impresión de tarjetas"
+  backlogs_default_story_tracker: "Tracker de historia por defecto"
+  backlogs_general_settings: "Configuración general"
   backlogs_impediment: Impedimento
-  backlogs_inactive: Project shows no activity
-  backlogs_points_burn_direction: Burn up/down de puntos
-  backlogs_product_backlog: Backlog de producto
-  backlogs_product_backlog_is_empty: Product backlog is empty
-  backlogs_product_backlog_unsized: The top of the product backlog has unsized stories
-  backlogs_sizing_inconsistent: Story sizes vary against their estimates
-  backlogs_sprint_notes_missing: Closed sprints without retrospective/review notes
-  backlogs_sprint_unestimated: Closed or active sprints with unestimated stories
-  backlogs_sprint_unsized: Project has stories on active or recently closed sprints that were not sized
+  backlogs_include_sat_and_sun: "Incluir sábado y domingo en el Burndown"
+  backlogs_new_story_position: "Las nuevas historias creadas se ubican en"
+  backlogs_new_story_position_bottom: "final (necesita reiniciar)"
+  backlogs_new_story_position_top: inicio
+  backlogs_not_all_themes_are_supported: "No están soportados todos los temas."
+  backlogs_pblpage_settings: "Página de configuración del backlog del producto"
+  backlogs_points_burn_direction: "Burn up/down de puntos"
+  backlogs_product_backlog: "Backlog del producto"
+  backlogs_scrum_stats_menu_application: "Menú de aplicación"
+  backlogs_scrum_stats_menu_none: Ninguno
+  backlogs_scrum_stats_menu_position: "Posición del menú de estadísticas Scrum"
+  backlogs_scrum_stats_menu_top: "Menú superior"
+  backlogs_set_start_and_duedates_from_sprint: "Definir inicio de la historia y la fecha de vencimiento del sprint"
+  backlogs_sharing_enabled: "Activar compartir"
+  backlogs_sharing_new_sprint: "Compartir los nuevos sprints"
+  backlogs_sharing_new_sprint_explanation: "Aunque todas las opciones posibles están disponibles aquí, los nuevos sprints son solo compartidos de acuerdo a los permisos de los usuarios y proyectos. Los sprints compartidos del sistema solo pueden ser creados por admins, los sprints jerárquicos y de árbol necesitan permisos en el proyecto raíz."
+  backlogs_sharing_support: "Compartir Backlogs"
+  backlogs_show_in_scrum_stats: "Mostrar el proyecto en las estadísticas Scrum"
+  backlogs_show_priority: "Mostrar prioridad de tarea en el tablero de tareas"
+  backlogs_show_redmine_std_header: "Mostar el encabezado de Redmine en Backlogs"
+  backlogs_show_stories_from_subprojects_in_backlog: "Mostrar las historias de los subproyectos en el Backlog"
+  backlogs_sprint_card_settings: "Impresión de tarjetas"
+  backlogs_sprint_sort_order: "Ordenar sprints por fecha de inicio"
+  backlogs_sprint_sort_order_asc: ascendente
+  backlogs_sprint_sort_order_desc: descendente
   backlogs_sprints: Sprints
+  backlogs_statistics_active: "El proyecto presenta actividad"
+  backlogs_statistics_active_failed: "El proyecto no presenta actividad"
+  backlogs_statistics_committed_velocity_stable: "La velocidad entregada es estable a lo largo de sprints"
+  backlogs_statistics_committed_velocity_stable_failed: "La velocidad entregada no es estable a lo largo de sprints"
+  backlogs_statistics_hours_per_point: "%{value} horas por punto de media"
+  backlogs_statistics_product_backlog_filled: "Backlog del producto tiene historias"
+  backlogs_statistics_product_backlog_filled_failed: "Backlog del producto está vacío"
+  backlogs_statistics_product_backlog_sized: "Las historias en la cima del backlog del producto están dimensionadas"
+  backlogs_statistics_product_backlog_sized_failed: "Las historias en la cima del backlog del producto no están dimensionadas"
+  backlogs_statistics_sizing_consistent: "El tamaño de las historias es estable en función del estimado"
+  backlogs_statistics_sizing_consistent_failed: "El tamaño de las historias varía en función del estimado"
+  backlogs_statistics_sizing_stddev: "Desviación estándar en horas contra puntos: %{value} horas"
+  backlogs_statistics_spent_hours_per_point: "%{value} horas usadas de media por punto aceptado"
+  backlogs_statistics_sprint_notes_available: "Los sprints cerrados recientemente contienen notas retrospectivas y/o de revisión"
+  backlogs_statistics_sprint_notes_available_failed: "Los sprints cerrados no contienen notas retrospectivas y/o de revisión"
+  backlogs_statistics_sprints: "Medido sobre %{value} sprints"
+  backlogs_statistics_sprints_estimated: "Sprints activos y recientemente cerrados contienen estimaciones de tareas"
+  backlogs_statistics_sprints_estimated_failed: "Sprints cerrados o activos contienen historias no estimadas"
+  backlogs_statistics_sprints_sized: "Sprints activos o recientemente cerrados se dimensionaron"
+  backlogs_statistics_sprints_sized_failed: "El proyecto contiene historias en sprints activos o recientemente cerrados que no han sido dimensionados"
+  backlogs_statistics_velocity: "Velocidad: %{value}"
+  backlogs_statistics_velocity_stddev: "Desviación estándar de la velocidad: %{value} puntos"
+  backlogs_statistics_yield: "El proyecto tiene un buen rendimiento promedio"
+  backlogs_statistics_yield_failed: "El proyecto tiene un bajo rendimiento promedio"
   backlogs_story: Historia
-  backlogs_story_tracker: Seguimiento de Historias
+  backlogs_story_close_status: "Estado para cerrar la historia automáticamente"
+  backlogs_story_follow_task_status_close: "Cerrar cuando todas las tareas están cerradas"
+  backlogs_story_follow_task_status_loose: "El ratio de tareas hechas de media es holgado"
+  backlogs_story_follow_task_status_nil: Deshabilitado
+  backlogs_story_follows_task_loose_explanation: "Nota: todos los estados de las tareas requieren un % hecho válido entre 0 y 100."
+  backlogs_story_follows_task_status: "La historia hereda el estado de la tarea"
+  backlogs_story_settings: "Configuración de historia y tarea"
+  backlogs_story_tracker: "Seguimiento de historias"
   backlogs_task: Tarea
-  backlogs_task_tracker: Seguimiento de Tareas
-  backlogs_velocity_missing: No velocity could be calculated for this project
-  backlogs_velocity_varies: Velocity varies significantly over sprints
-  backlogs_wiki_template: "Plantilla para p\xC3\xA1gina de Spring"
-  button_edit_wiki: Editar wiki
-  comma_delimited_numbers: 
-  current_open_story_points: "Current open story points:"
-  error_blank: cannot be blank
-  error_greater_than_start_date: cannot be earlier than Start Date
-  error_inclusion: 
-  error_intro_plural: "The following errors were encountered:"
-  error_intro_singular: "The following error was encountered:"
-  error_must_have_comma_delimited_list: must have a comma delimited list of story or task IDs
-  error_outro: Please correct the above errors before submitting again.
-  error_release_end_after_start: Release end date has to be after start date
-  error_taken: 
-  event_sprint_description: |-
-    %{summary}: %{url}
-    %{description}
+  backlogs_task_tracker: "Seguimiento de tarea"
+  backlogs_wiki_template: "Plantilla para página de sprint"
+  button_edit_wiki: "Editar wiki"
+  comma_delimited_numbers: "Números delimitados por comas"
+  current_open_story_points: "Puntos de la historia abierta actual:"
+  error_blank: "No puede estar vacío"
+  error_greater_than_start_date: "no puede ser anterior a la fecha de inicio"
+  error_inclusion: "no está incluido en la lista"
+  error_intro_plural: "Se encontraron los siguientes errores:"
+  error_intro_singular: "Se encontró el siguiente error:"
+  error_must_have_comma_delimited_list: "la lista de historias o IDs de tareas debe estar separada por comas"
+  error_no_workflow_for_task_tracker: "Usted no tiene acceso al seguimiento de tareas. Si cree que esto es un error, por favor, solicite al administrador que actualice el flujo de trabajo."
+  error_outro: "Por favor, corrija los errores antes de volver a realizar la solicitud."
+  error_release_end_after_start: "La fecha de release final tiene que ser después de la fecha de inicio"
+  error_sprint_end_before_start: "El sprint no puede acabar antes de comenzar"
+  error_taken: "ya se encuentra en uso"
   event_sprint_summary: "%{project}: %{summary}"
-  field_backlogs_issue_type: Tipo de backlog
-  field_blocks: Blocks
-  field_initial_estimate: 
-  field_initial_story_points: Initial story points
-  field_name: Name
-  field_number_of_snapshots: Saved point snapshots
-  field_position: "Posici\xC3\xB3n"
-  field_release_end_date: Release end date
-  field_release_start_date: Release start date
-  field_story_points: Puntos de historia
-  field_subject: Subject
-  field_tracker_id: Tracker ID
-  field_velocity_based_estimate: "Estimaci\xC3\xB3n basada en la velocidad"
-  label_back_to_project: Volver al proyecto
+  field_assigned_to: "Asignado a"
+  field_backlogs_issue_type: "Tipo de backlog"
+  field_base: ""
+  field_blocks: Bloques
+  field_name: Nombre
+  field_planned_velocity: "Velocidad prevista"
+  field_position: Posición
+  field_priority: Prioridad
+  field_project_id: "Id de proyecto"
+  field_release: Release
+  field_release_end_date: "Fecha final de la release"
+  field_release_relationship: "Relación de la release"
+  field_release_start_date: "Fecha inicial de la release"
+  field_remaining_hours: "Restante (horas)"
+  field_story_points: "Puntos de historia"
+  field_subject: Tema
+  field_task_color: "Color de tarea"
+  field_time_entry_comments: "Time Entry de comentarios"
+  field_time_entry_hours: "Time Entry de horas"
+  field_time_entry_spend_on: "Time Entry de gastado"
+  field_time_entry_user_id: "Time Entry de Id de usuario"
+  field_tracker_id: "Tracker ID"
+  field_velocity_based_estimate: "Estimación basada en la velocidad"
+  label_all_tasks: "Todas las tareas"
+  label_back_to_project: "Volver a la página del proyecto"
   label_backlogs: Backlogs
-  label_backlogs_unconfigured: You have not configured Backlogs yet. Please go to %{administration} > %{plugins}, then click on the %{configure} link for this plugin. Once you have set the fields, come back to this page to start using the tool.
+  label_backlogs_unconfigured: "No ha configurado Backlogs aún, por favor, dirijase a %{administration} > %{plugins}, luego pulse en el enlace %{configure} para este plugin. Una vez que haya configurado los valores regrese a esta página para empezar a usar esta herramienta."
   label_burndown: Burndown
-  label_chart_options: Chart Options
-  label_hours: hours
-  label_hours_ideal: 
-  label_hours_remaining: 
-  label_hours_required_burn_rate: 
+  label_chart_options: "Opciones del gráfico"
+  label_close_completed_sprints: "Cerrar sprints completados"
+  label_closed_releases: "Releases cerradas"
+  label_column_width: "Ancho de columna"
+  label_download_sprint: Descargar
+  label_filter_tasks: "Filtrar por usuario"
+  label_filter_tasks_my_tasks: "Filtrar por usuario - mis tareas"
+  label_hide_completed_sprints: "Ocultar sprints completados"
+  label_hours: horas
+  label_hours_remaining: "horas faltantes"
+  label_hours_required_burn_rate: "es necesario el burn rate (horas)"
+  label_ideal: ideal
   label_impediments: Impedimentos
-  label_master_backlog: Master Backlog
-  label_not_prioritized: not prioritized
-  label_points: points
-  label_points_accepted: 
-  label_points_burn_down: Down
-  label_points_burn_up: Up
-  label_points_committed: 
-  label_points_required_burn_rate: 
-  label_points_resolved: 
-  label_points_to_accept: 
-  label_points_to_resolve: 
-  label_product_backlog: product backlog
-  label_product_cards: Tarjetas del Product backlog
+  label_master_backlog: "Backlog principal"
+  label_my_tasks: "Mis tareas"
+  label_new_sprint: "Nuevo sprint"
+  label_new_story: "Nueva historia"
+  label_no_data_to_show: "No hay datos para mostrar"
+  label_no_end: "sin final"
+  label_no_start: "sin inicio"
+  label_not_prioritized: "no priorizado"
+  label_points: puntos
+  label_points_accepted: "puntos aceptados"
+  label_points_added: "puntos añadidos"
+  label_points_backlog: "puntos backlog"
+  label_points_burn_down: Abajo
+  label_points_burn_up: Arriba
+  label_points_committed: "puntos realizados"
+  label_points_required_burn_rate: "es necesario el burn rate (puntos)"
+  label_points_resolved: "puntos resueltos"
+  label_points_to_accept: "puntos no aceptados"
+  label_points_to_resolve: "puntos no resueltos"
+  label_product_backlog: "backlog del producto"
+  label_product_cards: "Tarjetas del backlog del producto"
   label_release: Release
-  label_release_end_date: 
-  - - field_release_start_date
-  label_release_new: New release
-  label_release_planning: Release Planning
+  label_release_end_date: "Fecha final de la release"
+  label_release_new: "Nueva release"
+  label_release_planned_velocity_end_date: "Velocidad prevista para la fecha de finalización estimada"
+  label_release_planning: "Planificación de la release"
   label_release_plural: Releases
-  label_release_start_date: 
-  - - field_release_start_date
-  label_scrum_statistics: "Estad\xC3\xADsticas de Scrum"
-  label_select_all: Seleccionar todas
-  label_sprint_backlog: sprint backlog
-  label_sprint_cards: Tarjetas del Sprint
-  label_sprint_impediments: Sprint Impediments
-  label_sprint_name: Sprint "%{name}"
-  label_sprint_velocity: Velocity %{velocity}, based on %{sprints} sprints with an average %{days} days
+  label_release_relationship_added: Añadida
+  label_release_relationship_auto: Auto
+  label_release_relationship_continued: Continuada
+  label_release_relationship_initial: Inicial
+  label_release_start_date: "Fecha inicial de la release"
+  label_release_trend_end_date: "Tendencia estimada de la fecha de finalización"
+  label_reset: Reiniciar
+  label_scrum_statistics: "Estadísticas de Scrum"
+  label_select_all: "Seleccionar todas"
+  label_show_completed_sprints: "Mostrar sprints completados"
+  label_sprint_backlog: "Backlog del sprint"
+  label_sprint_cards: "Tarjetas del sprint"
+  label_sprint_impediments: "Impedimentos del sprint"
+  label_sprint_name: "Sprint \"%{name}\""
   label_stories: Historias
   label_stories_tasks: Historias/Tareas
-  label_task_board: Tablero de tareas
-  label_webcal: Webcal Feed
-  rb_label_copy_tasks: Copy tasks
-  rb_label_copy_tasks_all: All
-  rb_label_copy_tasks_none: None
-  rb_label_copy_tasks_open: Open
-  rb_label_link_to_original: Include link to original story
-  rb_task_cards_stories_then_tasks: 
-  rb_task_cards_story_follows_tasks: 
-  rb_task_cards_tasks_follow_story: 
-  rb_taskboard_card_order: 
-  release_create_snapshot_today: Save story point snapshot for today
-  release_update_snapshot_today: Update story point snapshot for today
-  remaining_story_points: Puntos de historia pendientes
-  today_not_in_release_msg: Current date is not within release date range. Really save snapshot?
-  today_not_in_release_warning: "Warning: current date is not within release date range."
-  todo_issue_description: |-
-    %{summary}: %{url}
-    %{description}
+  label_task_board: "Tablero de tareas"
+  label_view_options: "Ver opciones"
+  label_webcal: "Fuente webcal"
+  rb_auto_refresh: "Autorefrescar backlogs/tablero de tareas (segundos)"
+  rb_burndown_timezone: "Zona horaria para el límite diario del Burndown"
+  rb_burndown_timezone_explanation: |-
+      Para soportar equipos distribuidos, los cálculos para las gráficas del Burndown usan un concepto común de cuando comienza el día.
+      La zona horaria de su usuario es %{user_timezone}, la zona horaria del servidor es %{server_timezone} y los Burndowns usan %{burndown_timezone} para calcular las gráficas.
+      Nota: los datos históricos no son afectados al cambiar esta opción.
+  rb_label_copy_tasks: "Copiar tareas"
+  rb_label_copy_tasks_all: Todos
+  rb_label_copy_tasks_none: Ninguno
+  rb_label_copy_tasks_open: Abierto
+  rb_label_link_to_original: "Incluir el enlace de la historia original"
+  rb_label_timelog_disable: Desactivado
+  rb_label_timelog_enable: Activo
+  rb_project_settings_update_error: "Error actualizando la configuración"
+  rb_project_settings_updated: "Configuración actualizada"
+  rb_release_burnup_enabled: "Habilitar gráfica release burnup (EXPERIMENTAL)"
+  rb_show_burndown_in_sidebar: "Mostrar gráfica de burndown en la barra lateral de las peticiones"
+  rb_show_project_name: "Mostrar el nombre del proyecto en backlogs"
+  rb_task_cards_stories_then_tasks: "Primero todas las historias, luego todas las tareas"
+  rb_task_cards_story_follows_tasks: "Tareas seguidas por sus historias"
+  rb_task_cards_tasks_follow_story: "Historia seguida por sus tareas"
+  rb_taskboard_card_order: "Orden de la impresión de tarjetas"
+  rb_timelog_from_taskboard: "Timelog para el tablero de tareas"
+  remaining_story_points: "Puntos de historia pendientes"
+  story_description: Descripción
+  story_estimation_hours: "Estimación (horas)"
+  story_points: Puntos
+  story_remaining_hours: "Faltante (horas)"
+  story_spent_time: "Tiempo gastado"
+  story_status: Estado
+  today_not_in_release_warning: "Advertencia: la fecha actual no se encuentra dentro del rango de fecha de la release."
   todo_issue_summary: "%{type}: %{summary}"
-  use_free_text_if_empty: 
+  use_free_text_if_empty: "Use un campo de texto en lugar de la lista desplegable si está vacío"
+  warning_reset_sprint: |-
+      ¡Está a punto de reiniciar este SPRINT!
+
+      ¿Está seguro de que desea hacer esto? Reiniciar el sprint
+      tendrá los siguientes efectos sobre las historias y las tareas
+
+      * La fecha de creación será establecida en la fecha inicial del sprint
+      * TODAS las modificaciones de las historias y las tareas excepto
+         las notas serán ELMINADAS
+      * El valor actual será el valor inicial para todas
+         propiedades de las historias o tareas
+      * El estado se establecerá en el valor por defecto de la petición.

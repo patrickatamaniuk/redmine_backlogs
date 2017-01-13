@@ -1,8 +1,12 @@
-body
-{
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: right bottom;
+#taskboard, #taskboard table {
+  background-color: white;
+  color: black;
+}
+#taskboard .task {
+  color: black;
+}
+#taskboard .issue .subject {
+  white-space: normal;
 }
 
 #assigned_to_id_options{
@@ -20,7 +24,7 @@ body
  swimlane class is used by:
   - #board_header
   - .board
-  
+
 Also use by the Column Width preference to
 determine the unit width of the swimlanes.
 See RB.Taskboard.initialize()
@@ -31,27 +35,29 @@ See RB.Taskboard.initialize()
   width:105px; /* Must be the same as min-width */
 }
 
+#taskboard { position: relative; } /*for fixed header*/
+#impediments { padding-top: 40px; }
 /* status labels */
 #board_header{
-  background-color:#ccffff;
+  background-color:#EEEEEE;
   border:1px solid #CCCCCC;
   margin-bottom:0;
   margin-right:10px;
+  position: absolute;
+  z-index: 200;
 }
 #board_header td{
-  background-color:#ccffff;
+  background-color:#EEEEEE;
+  background: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#DDD));
+  background: -moz-linear-gradient(top, #FFF, #DDD);
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#FFFFFF,EndColorStr=#DDDDDD);
   border-right:1px dotted #CFCFCF;
-  color:#7E7E7E;
+  color:#4E4E4E;
   font-size:14px;
   font-weight:bold;
   height:30px;
   text-align:center;
   vertical-align:middle;
-}
-#board_header td:first-child{
-  min-width:231px;
-  padding:10px;
-  width:231px;
 }
 #board_header td:last-child{
   border-right:none;
@@ -72,10 +78,12 @@ See RB.Taskboard.initialize()
   border-bottom:1px dotted #CFCFCF;
   vertical-align:top;
 }
+
+#board_header td:first-child,
 .board td:first-child{
   min-width:210px;
   padding:5px;
-  width:210px; 
+  width:210px;
 }
 .board td:last-child{
   border-right:none;
@@ -84,12 +92,8 @@ See RB.Taskboard.initialize()
   border-bottom:none;
 }
 .board .add_new{
-  margin:0;
-  min-width:30px;
-  padding:0;
-  text-align:center;
+  display: inline-block;
   vertical-align:middle;
-  width:30px;
 }
 .board .add_new:hover{
   cursor:pointer;
@@ -100,12 +104,15 @@ See RB.Taskboard.initialize()
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;;
   box-shadow: 2px 2px 2px #CCCCCC;;
+  background: -webkit-gradient(linear, left top, left bottom, from(#FEE), to(#FD2));
+  background: -moz-linear-gradient(top, #FEE, #FD2);
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#FFEEEE,EndColorStr=#FFDD22);
   background-color:#F8F6A5;
   border:none;
   display:block;
   float:left;
   font-size:10px;
-  height:80px;
+  min-height:80px;
   margin:5px;
   padding:5px;
   position:relative;
@@ -116,13 +123,19 @@ See RB.Taskboard.initialize()
   -webkit-border-radius:4px 4px 4px 4px;
   border-radius:4px 4px 4px 4px;
   background-color:#FFFFFF;
-  font-size:9px;
+  font-size:.9em;
   opacity:0.8;
   overflow:hidden;
-  padding-bottom:1px;
-  padding-right:3px;
-  text-align:right;
-  width:187px;
+  padding:1px 3px 1px 3px;
+  line-height: 14px;
+}
+.story .id a,
+.story .id .remaininghours {
+  float:right;
+  margin-left: 4px;
+}
+.story .id .assignee{
+  font-weight: bold;
 }
 .story .subject{
   height:63px;
@@ -132,13 +145,37 @@ See RB.Taskboard.initialize()
   padding:2px;
   width:186px;
 }
+.story .project {
+  text-align:left;
+}
+.story .id .v {
+  display:none;
+}
 .story.closed .subject{
   text-decoration:line-through;
 }
+.story .story_points.editable{
+  -moz-border-radius:15px 15px 15px 15px;
+  -webkit-border-radius:15px 15px 15px 15px;
+  border-radius:15px 15px 15px 15px;
+  border:2px solid #FFFFFF;
+  background-color:#FF8800;
+  color:#FFFFFF;
+  position:absolute;
+  padding:1em;
+  bottom:-5px;
+  right:-5px;
+}
+.story .story_points.editable:empty{
+  display:none;
+}
 
 /* item styles used by .task and .impediment */
-.issue, .placeholder{
-  background-color:#AFAFAF;
+#taskboard .issue, #taskboard .placeholder{
+  background-color:#CCCCCC;
+  background: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#AAA));
+  background: -moz-linear-gradient(top, #E0E0E0, #AAA);
+  filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=1,GradientType=0,StartColorStr=#E0E0E0,EndColorStr=#AAAAAA);
   border:none;
   cursor:move;
   display:block;
@@ -149,13 +186,14 @@ See RB.Taskboard.initialize()
   padding:5px;
   position:relative;
   width:85px;
+  line-height: 12px;
 }
-.issue{
+#taskboard .issue{
   -moz-box-shadow: 2px 2px 2px #CCCCCC;
   -webkit-box-shadow: 2px 2px 2px #CCCCCC;
   box-shadow: 2px 2px 2px #CCCCCC;
 }
-.placeholder{
+#taskboard .placeholder{
   background-color:#FFFF00;
   border:1px dashed #333300;
   height:78px;
@@ -175,6 +213,9 @@ See RB.Taskboard.initialize()
   text-align:right;
   width:82px;
 }
+.issue .id .v{
+  display:none;
+}
 .issue .id a{
   opacity:1.0;
 }
@@ -189,6 +230,7 @@ See RB.Taskboard.initialize()
   padding:2px;
   width:81px;
 }
+
 .issue.closed .subject.editable{
   text-decoration:line-through;
 }
@@ -200,6 +242,7 @@ See RB.Taskboard.initialize()
   padding:2px;
   padding-top:0;
   width:81px;
+  white-space:nowrap;
 }
 .issue .assigned_to_id .v{
   display:none;
@@ -225,7 +268,7 @@ See RB.Taskboard.initialize()
   display:none;
 }
 
-.issue .estimated_hours.editable{
+.issue .remaining_hours.editable{
   -moz-border-radius:15px 15px 15px 15px;
   -webkit-border-radius:15px 15px 15px 15px;
   border-radius:15px 15px 15px 15px;
@@ -243,7 +286,7 @@ See RB.Taskboard.initialize()
 .issue .blocks{
   display:none;
 }
-.issue .estimated_hours.editable:empty{
+.issue .remaining_hours.editable:empty{
   display:none;
 }
 .issue .indicator{
@@ -277,74 +320,62 @@ See RB.Taskboard.initialize()
 }
 
 /* dialog */
-
-.task_editor_dialog.ui-dialog .ui-dialog-titlebar-close{
+.rb_editor_dialog.ui-dialog .ui-dialog-titlebar-close{
   display:none;
 }
-.task_editor_dialog.ui-dialog .ui-widget-header{
+.rb_editor_dialog.ui-dialog .ui-widget-header{
   background:none;
   background-color:#FFFFFF;
   opacity:0.5;
 }
-.task_editor_dialog.ui-dialog .ui-dialog-title{
+.rb_editor_dialog.ui-dialog .ui-dialog-title{
   float:right;
   margin-right:0;
 }
-.task_editor_dialog.ui-dialog.ui-widget-content{
+.rb_editor_dialog.ui-dialog.ui-widget-content{
   -moz-box-shadow: 2px 2px 5px #777777;
   -webkit-box-shadow: 2px 2px 5px #777777;
   box-shadow: 2px 2px 5px #777777;
   background:none;
   border:none;
 }
-.task_editor_dialog.ui-dialog .ui-dialog-buttonpane.ui-widget-content{
+.rb_editor_dialog.ui-dialog .ui-dialog-buttonpane.ui-widget-content{
   background:none;
   background-color:none;
   border:none;
 }
 
 /* item editor */
-#task_editor label{
+.rb_editor label{
   display:block;
   font-size:11px;
   text-transform:capitalize;
   width:100%;
 }
-#task_editor .editor{
+.rb_editor .editor{
   font-size:11px;
   margin-bottom:10px;
   width:100%;
 }
-#task_editor .subject{
+.rb_editor .subject{
   height:65px;
   width:272px;
 }
-#task_editor .estimated_hours,
-#task_editor .blocks{
+
+.rb_editor .description{
+  height:80px;
+  width:272px;
+}
+.rb_editor .remaining_hours,
+.rb_editor .time_entry_hours,
+.rb_editor .time_entry_user_id,
+.rb_editor .time_entry_spent_on,
+.rb_editor .blocks{
   width:268px;
 }
-
-/* compact view */
-.compact .story,
-.compact .label_sprint_impediments{
-  height:15px;
-}
-.compact .story .subject{
-  display:none;
-}
-.compact .issue{
-  height:21px;
-  padding:0;
-  width:21px;
-}
-.compact .issue *{
-  display:none;
-}
-.compact .placeholder{
-  background-color:#FFFF00;
-  border:1px dashed #333300;
-  height:19px;
-  width:19px;
+.rb_editor .time_entry_comments{
+  height:30px;
+  width:268px;
 }
 
 /* others */
@@ -361,4 +392,11 @@ See RB.Taskboard.initialize()
 }
 #warning{
   background-image:url('images/warning.png');
+}
+#ui-datepicker-div{
+  display: none;
+}
+
+#project_quick_jump_box{
+  max-width: 300px;
 }

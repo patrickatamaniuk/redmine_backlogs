@@ -2,24 +2,37 @@
 <%= link_to_if_authorized l(:label_release_new),
                           {:controller => 'rb_releases', :action => 'new', :project_id => @project},
                           :class => 'icon icon-add' %>
+<%= link_to_if_authorized l(:label_release_multiview_new),
+                          {:controller => 'rb_releases_multiview', :action => 'new', :project_id => @project},
+                          :class => 'icon icon-add' %>
 </div>
 
 <h2><%=l(:label_release_planning)%></h2>
 
-<% if @releases.empty? %><p class="nodata"><%= l(:label_no_data) %></p><% end %>
+<% if @releases_open.empty? && @releases_closed.empty? %><p class="nodata"><%= l(:label_no_data) %></p><% end %>
 
-<% @releases.each do |release| %>
+<% @releases_open.each do |release| %>
+    <%= render :partial => 'rb_releases/release', :object => release %>
+<% end %>
+
+<h2><%=l(:label_release_multiview)%></h2>
+<% @releases_multiview.each do |multiview| %>
+  <%= render :partial => 'rb_releases_multiview/release_multiview', :object => multiview %>
+<% end %>
+
+<h2><%=l(:label_closed_releases)%></h2>
+<% @releases_closed.each do |release| %>
     <%= render :partial => 'rb_releases/release', :object => release %>
 <% end %>
 
 <% content_for :sidebar do %>
     <h3><%= l(:label_release_plural) %></h3>
-    <% if @releases.empty? %>
+    <% if @releases_open.empty? %>
         no releases
-    <% elsif @releases.size == 1 %>
+    <% elsif @releases_open.size == 1 %>
         one release
     <% else %>
-        <%= @releases.size %> releases
+        <%= @releases_open.size %> releases
     <% end %>
 <% end %>
 

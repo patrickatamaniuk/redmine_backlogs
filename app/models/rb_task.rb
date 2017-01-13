@@ -4,17 +4,67 @@ class RbTask < Issue
   unloadable
 
   def self.tracker
-    task_tracker = Setting.plugin_redmine_backlogs[:task_tracker]
+    task_tracker = Backlogs.setting[:task_tracker]
     return nil if task_tracker.blank?
     return Integer(task_tracker)
   end
 
-  def self.create_with_relationships(params, user_id, project_id, is_impediment = false)
-    if Issue.const_defined? "SAFE_ATTRIBUTES"
-      attribs = params.clone.delete_if {|k,v| !RbTask::SAFE_ATTRIBUTES.include?(k) && !RbTask.column_names.include?(k) }
-    else
-      attribs = params.clone.delete_if {|k,v| !Issue.new.safe_attribute_names.include?(k.to_s) && !RbTask.column_names.include?(k)}
+  def self.class_default_status
+    begin
+      t = Tracker.find(self.tracker)
+      return t.default_status
+    rescue => e
+      Rails.logger.error("Task has no trackers configured #{e}")
+      puts("Task has no trackers configured #{e}")
+      nil
     end
+  end
+
+  def self.tracker?(tracker_id)
+    self.tracker == tracker_id.to_i
+  end
+
+  # unify api between story and task. FIXME: remove this when merging to tracker-free-tasks
+  # required for RbServerVariablesHelper.workflow_transitions
+  def self.trackers(options = {})
+    options = {:type => options} if options.is_a?(Symbol)
+
+    # somewhere early in the initialization process during first-time migration this gets called when the table doesn't yet exist
+    trackers = [self.tracker]
+
+    begin
+      trackers = Tracker.where(id: trackers)
+    rescue ActiveRecord::RecordNotFound => e
+      trackers = nil
+    end
+    trackers = trackers & options[:project].trackers if options[:project]
+    trackers = trackers.sort_by { |t| [t.position] }
+
+    case options[:type]
+      when :trackers    then return trackers
+      when :array, nil  then return trackers.collect{|t| t.id}
+      when :string      then return trackers.collect{|t| t.id.to_s}.join(',')
+      else                   raise "Unexpected return type #{options[:type].inspect}"
+    end
+  end
+
+  def self.rb_safe_attributes(params)
+    if Issue.const_defined? "SAFE_ATTRIBUTES"
+      safe_attributes_names = RbTask::SAFE_ATTRIBUTES
+    else
+      safe_attributes_names = Issue.new(
+        :project_id=>params[:project_id] # required to verify "safeness"
+      ).safe_attribute_names
+    end
+    attribs = params.select {|k,v| safe_attributes_names.include?(k) }
+    # lft and rgt fields are handled by acts_as_nested_set
+    attribs = attribs.select{|k,v| k != 'lft' and k != 'rgt' }
+    attribs = Hash[*attribs.flatten] if attribs.is_a?(Array)
+    return attribs
+  end
+
+  def self.create_with_relationships(params, user_id, project_id, is_impediment = false)
+    attribs = rb_safe_attributes(params)
 
     attribs['author_id'] = user_id
     attribs['tracker_id'] = RbTask.tracker
@@ -22,43 +72,61 @@ class RbTask < Issue
 
     blocks = params.delete('blocks')
 
+#if we are an impediment and have blocks, set our project_id.
+#if we have multiple blocked tasks, cross-project relations must be enabled, otherwise save-validation will fail. TODO: make this more user friendly by pre-validating here and suggesting to enable cross-project relation support in redmine base setup.
+    if is_impediment and blocks and blocks.strip != ''
+      begin
+        first_blocked_id = blocks.split(/\D+/)[0].to_i
+        attribs['project_id'] = Issue.find_by_id(first_blocked_id).project_id if first_blocked_id
+      rescue
+      end
+    end
+
     task = new(attribs)
+    if params['parent_issue_id']
+      parent = Issue.find(params['parent_issue_id'])
+      task.start_date = parent.start_date
+    end
     task.save!
 
-    raise "Not a valid block list" if is_impediment && !task.validate_blocks_list(blocks)
+    raise "Block list must be comma-separated list of task IDs" if is_impediment && !task.validate_blocks_list(blocks) # could we do that before save and integrate cross-project checks?
 
     task.move_before params[:next] unless is_impediment # impediments are not hosted under a single parent, so you can't tree-order them
     task.update_blocked_list blocks.split(/\D+/) if is_impediment
+    task.time_entry_add(params)
 
     return task
   end
 
   # TODO: there's an assumption here that impediments always have the
   # task-tracker as their tracker, and are top-level issues.
-  def self.find_all_updated_since(since, project_id, find_impediments = false)
-    find(:all,
-         :conditions => ["project_id = ? AND updated_on > ? AND tracker_id in (?) and parent_id IS #{ find_impediments ? '' : 'NOT' } NULL", project_id, Time.parse(since), tracker],
-         :order => "updated_on ASC")
-  end
+  def self.find_all_updated_since(since, project_id, find_impediments = false, sprint_id = nil)
+    #find all updated visible on taskboard - which may span projects. This returns a Relation/scope
 
-  def self.tasks_for(story_id)
-    tasks = []
-    story = RbStory.find_by_id(story_id)
-    if RbStory.trackers.include?(story.tracker_id)
-      story.descendants.each_with_index {|task, i|
-        task = task.becomes(RbTask)
-        task.rank = i + 1
-        tasks << task 
-      }
+    if sprint_id.nil? #FIXME this branch makes no sense, we are on a taskboard which may be sharing across projects
+      Rails.logger.warn("DEPRECATION WARNING: RbTask.find_all_updated_since used without sprint")
+      scope = where(:project_id => project_id)
+    else #this should be the only branch here.
+      scope = where(:fixed_version_id => sprint_id)
     end
-    return tasks
+    scope.where(["updated_on > ?
+                  AND tracker_id in (?)
+                  AND parent_id IS #{ find_impediments ? '' : 'NOT' } NULL",
+                 Time.parse(since), tracker]).
+        order("updated_on ASC")
   end
 
   def update_with_relationships(params, is_impediment = false)
-    if Issue.const_defined? "SAFE_ATTRIBUTES"
-      attribs = params.clone.delete_if {|k,v| !RbTask::SAFE_ATTRIBUTES.include?(k) }
-    else
-      attribs = params.clone.delete_if {|k,v| !Issue.new.safe_attribute_names.include?(k.to_s) }
+    time_entry_add(params)
+
+    attribs = RbTask.rb_safe_attributes(params)
+
+    # Auto assign task to current user when
+    # 1. the task is not assigned to anyone yet
+    # 2. task status changed (i.e. Updating task name or remaining hours won't assign task to user)
+    # Can be enabled/disabled in setting page
+    if Backlogs.setting[:auto_assign_task] && self.assigned_to_id.blank? && (self.status_id != params[:status_id].to_i)
+      attribs[:assigned_to_id] = User.current.id
     end
 
     valid_relationships = if is_impediment && params[:blocks] #if blocks param was not sent, that means the impediment was just dragged
@@ -67,9 +135,21 @@ class RbTask < Issue
                             true
                           end
 
-    if valid_relationships && result = journalized_update_attributes!(attribs)
+    if valid_relationships && result = self.journalized_update_attributes!(attribs)
       move_before params[:next] unless is_impediment # impediments are not hosted under a single parent, so you can't tree-order them
       update_blocked_list params[:blocks].split(/\D+/) if params[:blocks]
+
+      if params.has_key?(:remaining_hours)
+        begin
+          self.remaining_hours = Float(params[:remaining_hours].to_s.gsub(',', '.'))
+        rescue ArgumentError, TypeError
+          Rails.logger.warn "#{params[:remaining_hours]} is wrong format for remaining hours."
+        end
+        sprint_start = self.story.fixed_version.becomes(RbSprint).sprint_start_date if self.story
+        self.estimated_hours = self.remaining_hours if (sprint_start == nil) || (Date.today < sprint_start)
+        save
+      end
+
       result
     else
       false
@@ -78,11 +158,11 @@ class RbTask < Issue
 
   def update_blocked_list(for_blocking)
     # Existing relationships not in for_blocking should be removed from the 'blocks' list
-    relations_from.find(:all, :conditions => "relation_type='blocks'").each{ |ir|
+    relations_from.where(relation_type: 'blocks').find_each{ |ir|
       ir.destroy unless for_blocking.include?( ir[:issue_to_id] )
     }
 
-    already_blocking = relations_from.find(:all, :conditions => "relation_type='blocks'").map{|ir| ir.issue_to_id}
+    already_blocking = relations_from.where(relation_type: 'blocks').map{|ir| ir.issue_to_id}
 
     # Non-existing relationships that are in for_blocking should be added to the 'blocks' list
     for_blocking.select{ |id| !already_blocking.include?(id) }.each{ |id|
@@ -113,58 +193,49 @@ class RbTask < Issue
     end
   end
 
-  def rank=(r)
-    @rank = r
-  end
+  def burndown(sprint = nil, status=nil)
+    sprint ||= self.fixed_version.becomes(RbSprint) if self.fixed_version
+    return nil if sprint.nil? || !sprint.has_burndown?
 
-  def rank
-    s = self.story
-    return nil if !s
-
-    @rank ||= Issue.count( :conditions => ['tracker_id = ? and root_id = ? and lft > ? and lft <= ?', RbTask.tracker, s.root_id, s.lft, self.lft])
-    return @rank
-  end
-
-  def burndown(sprint = nil)
-    unless @burndown
-      sprint ||= story.fixed_version.becomes(RbSprint)
-      if sprint
-        days = sprint.days(:active)
-        @burndown = {:hr => history(:estimated_hours, days), :sprint => history(:fixed_version_id, days)}.transpose.collect{|h| h[:sprint] == sprint.id ? h[:hr] : nil}
+    self.history.filter(sprint, status).collect{|d|
+      if d.nil? || d[:sprint] != sprint.id || d[:tracker] != :task
+        nil
+      elsif ! d[:status_open]
+        0
       else
-        @burndown = nil
+        d[:hours]
       end
-    end
-
-    return @burndown
+    }
   end
 
-  def set_initial_estimate(hours)
-    if fixed_version_id and fixed_version.sprint_start_date
-      time = [fixed_version.sprint_start_date.to_time, created_on].max
-    else
-      time = created_on
-    end
-
-    jd = JournalDetail.find(:first, :order => "journals.created_on desc", :joins => :journal,
-      :conditions => ["property = 'attr' and prop_key = 'estimated_hours' and journalized_type = 'Issue' and journalized_id = ? and created_on <= ?", id, time])
-
-    if jd
-      if jd.value.blank? || Float(jd.value) != hours
-        hours = hours.to_s.gsub(/\.0+$/, '')
-
-        JournalDetail.connection.execute("update journal_details set value='#{hours}' where id = #{jd.id}")
-
-        jd = JournalDetail.find(:first, :order => "journals.created_on asc", :joins => :journal,
-          :conditions => ["property = 'attr' and prop_key = 'estimated_hours' and journalized_type = 'Issue' and journalized_id = ? and created_on >= ?", id, jd.journal.created_on])
-        JournalDetail.connection.execute("update journal_details set old_value='#{hours}' where id = #{jd.id}") if jd
+  def time_entry_add(params)
+    # Will also save time entry if only comment is filled, hours will default to 0. We don't want the user
+    # to loose a precious comment if hours is accidently left blank.
+    if !params[:time_entry_hours].blank? || !params[:time_entry_comments].blank?
+      @time_entry = TimeEntry.new(:issue => self, :project => self.project)
+      # Make sure user has permission to edit time entries to allow
+      # logging time for other users. Use current user in case none is selected
+      if User.current.allowed_to?(:edit_time_entries, self.project) && params[:time_entry_user_id].to_i != 0
+        @time_entry.user_id = params[:time_entry_user_id]
+      else
+        # Otherwise log time for current user
+        @time_entry.user_id = User.current.id
       end
-    else
-      if hours != estimated_hours
-        j = Journal.new(:journalized => self, :user => User.current, :created_on => time)
-        j.details << JournalDetail.new(:property => 'attr', :prop_key => 'estimated_hours', :value => estimated_hours, :old_value => hours)
-        j.save!
+      if !params[:time_entry_spent_on].blank?
+        @time_entry.spent_on = params[:time_entry_spent_on]
+      else
+        @time_entry.spent_on = Date.today
       end
+      @time_entry.hours = params[:time_entry_hours].gsub(',', '.').to_f
+      # Choose default activity
+      # If default is not defined first activity will be chosen
+      if default_activity = TimeEntryActivity.default
+        @time_entry.activity_id = default_activity.id
+      else
+        @time_entry.activity_id = TimeEntryActivity.first.id
+      end
+      @time_entry.comments = params[:time_entry_comments]
+      self.time_entries << @time_entry
     end
   end
 end

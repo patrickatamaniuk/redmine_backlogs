@@ -2,91 +2,167 @@ require_dependency 'project'
 
 module Backlogs
   class Statistics
-    def initialize
-      @errors = {}
-      @info = {}
-    end
+    def initialize(project)
+      @project = project
+      @statistics = {:succeeded => [], :failed => [], :values => {}}
 
-    def merge(stats, prefix = '')
-      errors.each {|err|
-        err = "#{prefix}#{err}".intern
-        stats[err] ||= 0
-        stats[err] += 1
-      }
-      return stats
-    end
+      @active_sprint = @project.active_sprint
+      @past_sprints = RbSprint.where("project_id = ? and not(effective_date is null or sprint_start_date is null) and effective_date < ?", @project.id, Date.today)
+        .order("effective_date desc")
+        .limit(5).select(&:has_burndown?)
 
-    def []=(cat, key, *args)
-      raise "Unexpected data category #{cat}" unless [:error, :info].include?(cat)
+      @all_sprints = (@past_sprints + [@active_sprint]).compact
 
-      case args.size
-        when 2
-          subkey, value = *args
-        when 1
-          value = args[0]
-          subkey = nil
-        else
-          raise "Unexpected number of argments"
+      @all_sprints.each{|sprint| sprint.burndown.direction = :up }
+      days = @past_sprints.collect{|s| s.days.size}.sum
+      if days != 0
+        @points_per_day = @past_sprints.collect{|s| s.burndown.cached_data[:points_committed][0]}.compact.sum / days #FIXME this is very expensive
       end
 
-      case cat
-        when :error
-          if subkey.nil?
-            raise "Already reported #{key.inspect}" if @errors.include?(key)
-            @errors[key] = value.nil? ? nil : (!!value)
+      if @all_sprints.size != 0
+        @velocity = @past_sprints.collect{|sprint| sprint.burndown.cached_data[:points_accepted][-1].to_f}
+        @velocity_stddev = stddev(@velocity)
+      end
 
-          else
-            raise "Already reported #{key.inspect}" if @errors.include?(key) && ! @errors[key].is_a?(Hash)
-            @errors[key] ||= {}
+      spent_hours = @past_sprints.collect{|sprint| sprint.spent_hours}
+      @spent_hours_per_point = spent_hours.sum / @velocity.sum unless spent_hours.nil? || @velocity.nil? || @velocity.sum == 0
 
-            raise "Already errors #{key.inspect}/#{subkey.inspect}" if @errors[key].include?(subkey)
-            @errors[key][subkey] = value.nil? ? nil : (!!value)
-          end
+      @product_backlog = RbStory.product_backlog(@project, 10)
 
-        when :info
-          raise "Already added info #{key.inspect}" if @info.include?(key)
-          @info[key] = value
+      hours_per_point = []
+      @all_sprints.each {|sprint|
+        hours = sprint.burndown.cached_data[:hours_remaining][0].to_f
+        next if hours == 0.0
+        hours_per_point << sprint.burndown.cached_data[:points_committed][0].to_f / hours
+      }
+
+      @hours_per_point_stddev = stddev(hours_per_point)
+      @hours_per_point = hours_per_point.sum.to_f / hours_per_point.size unless hours_per_point.size == 0
+
+      Statistics.active_tests.sort.each{|m|
+        r = send(m.intern)
+        next if r.nil? # this test deems itself irrelevant
+        @statistics[r ? :succeeded : :failed] <<
+          (m.to_s.gsub(/^test_/, '') + (r ? '' : '_failed'))
+      }
+      Statistics.stats.sort.each{|m|
+        v = send(m.intern)
+        @statistics[:values][m.to_s.gsub(/^stat_/, '')] = v unless v.nil? || (v.respond_to?(:"nan?") && v.nan?) || (v.respond_to?(:"infinite?") && v.infinite?)
+      }
+
+      if @statistics[:succeeded].size == 0 && @statistics[:failed].size == 0
+        @score = 100 # ?
+      else
+        @score = (@statistics[:succeeded].size * 100) / (@statistics[:succeeded].size + @statistics[:failed].size)
       end
     end
 
-    def score
-      scoring = {}
-      @errors.each_pair{ |k, v|
-        if v.is_a? Hash
-          v = v.values.select{|s| !s.nil?}
-          scoring[k] = v.select{|s| s}.size == 0 if v.size != 0
-        else
-          scoring[k] = !v unless v.nil?
-        end
-      }
-      return ((scoring.values.select{|v| v}.size * 10) / scoring.size)
+    attr_reader :statistics, :score
+    attr_reader :active_sprint, :past_sprints
+    attr_reader :hours_per_point
+    attr_reader :spent_hours_per_point
+
+    def stddev(values)
+      median = values.sum / values.size.to_f
+      variance = 1.0 / (values.size * values.inject(0){|acc, v| acc + (v-median)**2})
+      return Math.sqrt(variance)
     end
 
-    def scores(prefix='')
-      score = {}
-      @errors.each_pair{|k, v|
-        if v.is_a? Hash
-          v.each_pair {|sk, rv|
-            score["#{prefix}#{k}_#{sk}".intern] = rv if !rv.blank?
-          }
-        else
-          score["#{prefix}#{k}".intern] = v if !v.blank?
-        end
-      }
-      return score
+    def self.available
+      return Statistics.instance_methods.select{|m| m =~ /^test_/}.collect{|m| m.split('_', 2).collect{|s| s.intern}}
     end
 
-    def errors(prefix = '')
-      score = scores(prefix)
-      return score.keys.select{|k| score[k]}
+    def self.active_tests
+      # test this!
+      return Statistics.instance_methods.select{|m| m =~ /^test_/}.reject{|m| Backlogs.setting["disable_stats_#{m}".intern] }
     end
 
-    def info(prefix='')
-      info = {}
-      @info.each_pair {|k, v|
-        info["#{prefix}#{k}".intern] = v
+    def self.active
+      return Statistics.active_tests.collect{|m| m.split('_', 2).collect{|s| s.intern}}
+    end
+
+    def self.stats
+      return Statistics.instance_methods.select{|m| m =~ /^stat_/}
+    end
+
+    def info_no_active_sprint
+      return !@active_sprint
+    end
+
+    def test_product_backlog_filled
+      return (@project.status != Project::STATUS_ACTIVE || @product_backlog.length != 0)
+    end
+
+    def test_product_backlog_sized
+      return !@product_backlog.detect{|s| s.story_points.blank? }
+    end
+
+    def test_sprints_sized
+      return !Issue.exists?(["story_points is null and fixed_version_id in (?) and tracker_id in (?)", @all_sprints.collect{|s| s.id}, RbStory.trackers])
+    end
+
+    def test_sprints_estimated
+      return !Issue.exists?(["estimated_hours is null and fixed_version_id in (?) and tracker_id = ?", @all_sprints.collect{|s| s.id}, RbTask.tracker])
+    end
+
+    def test_sprint_notes_available
+      return !@past_sprints.detect{|s| !s.has_wiki_page}
+    end
+
+    def test_active
+      return (@project.status != Project::STATUS_ACTIVE || (@active_sprint && @active_sprint.activity))
+    end
+
+    def test_yield
+      accepted = []
+      @past_sprints.each {|sprint|
+        bd = sprint.burndown
+        bd.direction = :up
+        c = bd.cached_data[:points_committed][-1]
+        a = bd.cached_data[:points_accepted][-1]
+        next unless c && a && c != 0
+
+        accepted << [(a * 100.0) / c, 100.0].min
       }
-      return info
+      return false if accepted == []
+      return (stddev(accepted) < 10) # magic number
+    end
+
+    def test_committed_velocity_stable
+      return (@velocity_stddev && @velocity_stddev < 4) # magic number!
+    end
+
+    def test_sizing_consistent
+      return (@hours_per_point_stddev < 4) # magic number
+    end
+
+    def stat_sprints
+      return @past_sprints.size
+    end
+
+    def stat_velocity
+      return nil unless @velocity && @velocity.size > 0
+      return @velocity.sum / @velocity.size
+    end
+
+    def stat_velocity_stddev
+      return @velocity_stddev unless @velocity_stddev.is_a? Float
+      return '%.2f' % @velocity_stddev
+    end
+
+    def stat_sizing_stddev
+      return @hours_per_point_stddev unless @hours_per_point_stddev.is_a? Float
+      return '%.2f' % @hours_per_point_stddev
+    end
+
+    def stat_hours_per_point
+      return @hours_per_point unless @hours_per_point.is_a? Float
+      return '%.2f' % @hours_per_point
+    end
+
+    def stat_spent_hours_per_point
+      return nil unless @spent_hours_per_point
+      return '%.2f' % @spent_hours_per_point
     end
   end
 
@@ -94,125 +170,169 @@ module Backlogs
     def self.included(base) # :nodoc:
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
+
+      base.class_eval do
+        unloadable
+        has_many :releases, -> { order "#{RbRelease.table_name}.release_start_date DESC, #{RbRelease.table_name}.name DESC" }, :class_name => 'RbRelease', :inverse_of => :project, :dependent => :destroy
+        has_many :releases_multiview, :class_name => 'RbReleaseMultiview', :dependent => :destroy
+        include Backlogs::ActiveRecord::Attributes
+      end
     end
-    
+
     module ClassMethods
     end
-    
+
     module InstanceMethods
-    
-      def active_sprint
-        return RbSprint.find(:first,
-          :conditions => ["project_id = ? and status = 'open' and ? between sprint_start_date and effective_date", self.id, Time.now])
-      end
-    
+
       def scrum_statistics
         ## pretty expensive to compute, so if we're calling this multiple times, return the cached results
-        return @scrum_statistics if @scrum_statistics
-  
-        @scrum_statistics = Backlogs::Statistics.new
-    
-        # magic constant
-        backlog = RbStory.product_backlog(self, 10)
-        active_sprint = self.active_sprint
-        closed_sprints = RbSprint.find(:all,
-          :conditions => ["project_id = ? and status in ('closed', 'locked') and not(effective_date is null or sprint_start_date is null)", self.id],
-          :order => "effective_date desc",
-          :limit => 5)
-        all_sprints = ([active_sprint] + closed_sprints).compact
-  
-        @scrum_statistics[:info, :active_sprint] = active_sprint
-        @scrum_statistics[:info, :closed_sprints] = closed_sprints
-  
-        @scrum_statistics[:error, :product_backlog, :is_empty] = (self.status == Project::STATUS_ACTIVE && backlog.length == 0)
-        @scrum_statistics[:error, :product_backlog, :unsized] = backlog.inject(false) {|unsized, story| unsized || story.story_points.blank? }
-  
-        @scrum_statistics[:error, :sprint, :unsized] = Issue.exists?(["story_points is null and fixed_version_id in (?) and tracker_id in (?)", all_sprints.collect{|s| s.id}, RbStory.trackers])
-        @scrum_statistics[:error, :sprint, :unestimated] = Issue.exists?(["estimated_hours is null and fixed_version_id in (?) and tracker_id = ?", all_sprints.collect{|s| s.id}, RbTask.tracker])
-        @scrum_statistics[:error, :sprint, :notes_missing] = closed_sprints.inject(false){|missing, sprint| missing || !sprint.has_wiki_page}
-  
-        @scrum_statistics[:error, :inactive] = (self.status == Project::STATUS_ACTIVE && !(active_sprint && active_sprint.activity))
-  
-        velocity = nil
-        begin
-          points = 0
-          error = 0
-          days = 0
-          closed_sprints.each {|sprint|
-            bd = sprint.burndown('up')
-            accepted = (bd[:points_accepted] || [0])[-1]
-            committed = (bd[:points_committed] || [0])[0]
-            error += (1 - (accepted.to_f / committed.to_f)).abs
-  
-            points += accepted
-            days += bd[:hours_ideal].size
-          }
-          error = (error / closed_sprints.size)
-          # magic constant
-          @scrum_statistics[:error, :velocity, :varies] = (error > 0.1)
-          @scrum_statistics[:error, :velocity, :missing] = false
-  
-          velocity = (points / closed_sprints.size)
-          @scrum_statistics[:info, :velocity_divergance] = error * 100
-  
-        rescue ZeroDivisionError
-          @scrum_statistics[:error, :velocity, :varies] = nil
-          @scrum_statistics[:error, :velocity, :missing] = true
-  
-          @scrum_statistics[:info, :velocity_divergance] = nil
-        end
-        @scrum_statistics[:info, :velocity] = velocity
-  
-        if all_sprints.size != 0 && velocity && velocity != 0
-          begin
-            dps = (all_sprints.inject(0){|d, s| d + s.days.size} / all_sprints.size)
-            @scrum_statistics[:info, :average_days_per_sprint] = dps
-            @scrum_statistics[:info, :average_days_per_point] = (velocity ? (dps.to_f / velocity) : nil)
-          rescue ZeroDivisionError
-            dps = nil
-          end
-        else
-          dps = nil
-        end
-
-        if dps.nil?
-          @scrum_statistics[:info, :average_days_per_sprint] = nil
-          @scrum_statistics[:info, :average_days_per_point] = nil
-        end
-  
-        sizing_divergance = nil
-        sizing_is_consistent = false
-  
-        sprint_ids = all_sprints.collect{|s| "#{s.id}"}.join(',')
-        story_trackers = RbStory.trackers.collect{|t| "#{t}"}.join(',')
-        if sprint_ids != '' && story_trackers != ''
-          select_stories = "
-            not (story_points is null or story_points = 0)
-            and not (estimated_hours is null or estimated_hours = 0)
-            and fixed_version_id in (#{sprint_ids})
-            and project_id = #{self.id}
-            and tracker_id in (#{story_trackers})
-          "
-  
-          points_per_hour = RbStory.find_by_sql("select avg(story_points) / avg(estimated_hours) as points_per_hour from issues where #{select_stories}")[0].points_per_hour
-  
-          if points_per_hour
-            points_per_hour = Float(points_per_hour)
-            stories = RbStory.find(:all, :conditions => [select_stories])
-            error = stories.inject(0) {|err, story|
-              err + (1 - (points_per_hour / (story.story_points / story.estimated_hours)))
-            }
-            sizing_divergance = error * 100
-            # magic constant
-            sizing_is_consistent = (error < 0.1)
-          end
-        end
-        @scrum_statistics[:info, :sizing_divergance] = sizing_divergance
-        @scrum_statistics[:error, :sizing_inconsistent] = !sizing_is_consistent
-  
-        return @scrum_statistics
+        @scrum_statistics ||= Backlogs::Statistics.new(self)
       end
-    
+
+      def rb_project_settings
+        RbProjectSettings.where(:project_id => self.id).first_or_create
+      end
+
+      def projects_in_shared_product_backlog
+        #sharing off: only the product itself is in the product backlog
+        #sharing on: subtree is included in the product backlog
+        if Backlogs.setting[:sharing_enabled] and self.rb_project_settings.show_stories_from_subprojects
+          self.self_and_descendants.visible.active
+        else
+          [self]
+        end
+        #TODO have an explicit association map which project shares its issues into other product backlogs
+      end
+
+      #return sprints which are
+      # 1. open in project,
+      # 2. share to project,
+      # 3. share to project but are scoped to project and subprojects
+      #depending on sharing mode
+      def open_shared_sprints
+        if Backlogs.setting[:sharing_enabled]
+          order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+          shared_versions.visible.where(:status => ['open', 'locked']).order("sprint_start_date #{order}, effective_date #{order}").collect{|v| v.becomes(RbSprint) }
+        else #no backlog sharing
+          RbSprint.open_sprints(self)
+        end
+      end
+
+      #depending on sharing mode
+      def closed_shared_sprints
+        if Backlogs.setting[:sharing_enabled]
+          order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+          shared_versions.visible.where(:status => ['closed']).order("sprint_start_date #{order}, effective_date #{order}").collect{|v| v.becomes(RbSprint) }
+        else #no backlog sharing
+          RbSprint.closed_sprints(self)
+        end
+      end
+
+      def active_sprint
+        time = (Time.zone ? Time.zone : Time).now
+        @active_sprint ||= RbSprint.where("project_id = ? and status = 'open' and not (sprint_start_date is null or effective_date is null) and ? >= sprint_start_date and ? <= effective_date",
+          self.id, time.end_of_day, time.beginning_of_day
+        ).take
+      end
+
+      def open_releases_by_date
+        order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+        (Backlogs.setting[:sharing_enabled] ? shared_releases : releases).
+          visible.open.
+          order("#{RbRelease.table_name}.release_end_date #{order}, #{RbRelease.table_name}.release_start_date #{order}")
+      end
+
+      def closed_releases_by_date
+        order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+        (Backlogs.setting[:sharing_enabled] ? shared_releases : releases).
+          visible.closed.
+          order("#{RbRelease.table_name}.release_end_date #{order}, #{RbRelease.table_name}.release_start_date #{order}")
+      end
+
+      def shared_releases
+        if new_record?
+          RbRelease.joins(:project).includes(:project).
+                    where("#{Project.table_name}.status <> #{Project::STATUS_ARCHIVED} AND #{RbRelease.table_name}.sharing = 'system'")
+        else
+          @shared_releases ||= begin
+            order = Backlogs.setting[:sprint_sort_order] == 'desc' ? 'DESC' : 'ASC'
+            r = root? ? self : root
+            RbRelease.joins(:project).includes(:project).where("#{Project.table_name}.id = #{id}" +
+                " OR (#{Project.table_name}.status <> #{Project::STATUS_ARCHIVED} AND (" +
+                  " #{RbRelease.table_name}.sharing = 'system'" +
+                " OR (#{Project.table_name}.lft >= #{r.lft} AND #{Project.table_name}.rgt <= #{r.rgt} AND #{RbRelease.table_name}.sharing = 'tree')" +
+                " OR (#{Project.table_name}.lft < #{lft} AND #{Project.table_name}.rgt > #{rgt} AND #{RbRelease.table_name}.sharing IN ('hierarchy', 'descendants'))" +
+                " OR (#{Project.table_name}.lft > #{lft} AND #{Project.table_name}.rgt < #{rgt} AND #{RbRelease.table_name}.sharing = 'hierarchy')" +
+                "))").
+              order("#{RbRelease.table_name}.release_end_date #{order}, #{RbRelease.table_name}.release_start_date #{order}")
+          end
+        end
+      end
+
+
+      # Returns a list of releases each project's stories can be dropped to on the master backlog.
+      # Notice it is disallowed to drop stories from sprints to releases if the stories are owned
+      # by parent projects which are out of scope of the currently selected project as they will
+      # disappear when dropped.
+      def droppable_releases
+        self.class.connection.select_all(_sql_for_droppables(RbRelease.table_name,true))
+      end
+
+      # Return a list of sprints each project's stories can be dropped to on the master backlog.
+      def droppable_sprints
+        self.class.connection.select_all(_sql_for_droppables(Version.table_name))
+      end
+
+private
+
+      # Returns sql for getting a list of projects and for each project which releases/sprints stories from the corresponding
+      # project can be dropped to on the master backlog.
+      # name: table_name for either RbRelease or Version (needs to have fields project_id and sharing)
+      # scoped_subproject: if true only subprojects are considered effectively disallowing dropping any issues from parent projects.
+      def _sql_for_droppables(name,scoped_subproject = false)
+        r = scoped_subproject ? self : self.root
+        sql = "SELECT pp.id as project," + _sql_for_aggregate_list("drp.id") +
+          " FROM #{name} drp " +
+          " LEFT JOIN #{Project.table_name} pp on drp.project_id = pp.id" +
+            " OR (pp.status <> #{Project::STATUS_ARCHIVED} AND (" +
+              " drp.sharing = 'system'" +
+              " OR (drp.sharing = 'tree' AND (" +
+                "pp.lft >= (SELECT p.lft from #{Project.table_name} p WHERE " +
+                  "p.lft < (SELECT p1.lft from #{Project.table_name} p1 WHERE p1.id=drp.project_id) AND " +
+                  "p.rgt > (SELECT p1.rgt from #{Project.table_name} p1 WHERE p1.id=drp.project_id) AND p.parent_id IS NULL) AND " +
+                "pp.rgt <= (SELECT p.rgt from #{Project.table_name} p WHERE " +
+                  "p.lft < (SELECT p1.lft from #{Project.table_name} p1 WHERE p1.id=drp.project_id) AND " +
+                  "p.rgt > (SELECT p1.rgt from #{Project.table_name} p1 WHERE p1.id=drp.project_id) AND p.parent_id IS NULL)" +
+              "))" +
+              " OR (drp.sharing IN ('hierarchy', 'descendants') AND (" +
+                "pp.lft >= (SELECT p.lft from #{Project.table_name} p WHERE p.id=drp.project_id) AND " +
+                "pp.rgt <= (SELECT p.rgt from #{Project.table_name} p WHERE p.id=drp.project_id)" +
+              ")) " +
+              " OR (drp.sharing = 'hierarchy' AND (" +
+                "pp.lft < (SELECT p.lft from #{Project.table_name} p WHERE p.id=drp.project_id) AND " +
+                "pp.rgt > (SELECT p.rgt from #{Project.table_name} p WHERE p.id=drp.project_id)"+
+              "))" +
+          "))" +
+          " WHERE pp.lft >= #{r.lft} AND pp.rgt <= #{r.rgt}" +
+          " GROUP BY pp.id;"
+        sql
+      end
+
+      # Returns sql for aggregating a list from grouped rows. Depends on database implementation.
+      def _sql_for_aggregate_list(field_name)
+        adapter_name = self.class.connection.adapter_name.downcase
+        aggregate_list = ""
+        if adapter_name.starts_with? 'mysql'
+          aggregate_list = " GROUP_CONCAT(#{field_name} SEPARATOR ',') as list "
+        elsif adapter_name.starts_with? 'postgresql'
+          aggregate_list = " array_to_string(array_agg(#{field_name}),',') as list "
+        elsif adapter_name.starts_with? 'sqlite'
+          aggregate_list = " GROUP_CONCAT(#{field_name}) as list "
+        else
+          raise NotImplementedError, "Unknown adapter '#{adapter_name}'"
+        end
+      end
+
     end
   end
 end

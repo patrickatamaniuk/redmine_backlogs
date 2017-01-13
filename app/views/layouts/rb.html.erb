@@ -1,34 +1,128 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-<title><%=h html_title %></title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title><%=h html_title %></title>
 <meta name="description" content="Redmine Backlogs" />
 <meta name="keywords" content="issue,bug,tracker,scrum,agile,plugin" />
+<%= csrf_meta_tag %>
+<%= favicon %>
 
-<%= render :partial => 'shared/head' %>
-<%= stylesheet_link_tag 'global.css', 'jquery-ui.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
+<% if Backlogs.setting[:show_redmine_std_header] %>
+<%= stylesheet_link_tag 'application', :media => 'all' %>
+<%= stylesheet_link_tag 'rtl', :media => 'all' if l(:direction) == 'rtl' %>
+<% end %>
+
+<%= javascript_include_tag 'jquery/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js', :plugin => 'redmine_backlogs' %>
+
+<%= call_hook :view_layouts_base_html_head %>
+
+<%= stylesheet_link_tag 'global.css', 'jquery/jquery-ui.css', :plugin => 'redmine_backlogs', :media => 'print,screen' %>
 <%= stylesheet_link_tag 'global_print.css', :plugin => 'redmine_backlogs', :media => 'print' %>
 
 <%= yield :head_tags -%>
+
+<% if Backlogs.setting[:show_redmine_std_header] %>
+<script type="text/javascript">
+RB.$(function(){
+
+  /* jquery sortable behaves erradically on firefox when
+   * the page is scrolled down AND position:relative elements are containing the sortable AND overflow-y:scroll is used.
+   * As that overflow-y comes from redmine (its an IE fix) and i decided against using css @-moz-document to fix this up,
+   * here the mini browser detection in active code.
+   * wth.
+   */
+  try{ if (navigator.userAgent.toLowerCase().match(/mozilla/)) {
+    //fix around jquery sortable offset problems when page is scrolled down.
+    document.getElementsByTagName('html')[0].style.overflowY = 'inherit';
+  }} catch(e){}
+
+  /* provide the possibility to collapse the redmine header */
+  RB.$('#usability-compat-wrapper').bind('dblclick', function(e,u){
+    RB.$('#usability-compat-wrapper').toggleClass('w-rb-header-collapsed');
+  });
+});
+</script>
+<% end %>
 </head>
-<body>
-  <div id="toolbar">
-    <div class="breadcrumbs">
-      <%= render_backlog_project_jump_box %>
-      <span class="home"><%= link_to @project.name, :controller => :projects, :action => :show, :id => @project %></span>
-      <%= breadcrumb_separator %>
-      <%= yield :breadcrumbs -%>
+<body class="<%=h body_css_classes if Backlogs.setting[:show_redmine_std_header] %>">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<% if Backlogs.setting[:show_redmine_std_header] %>
+<div id="usability-compat-wrapper">
+<div id="top-menu" title="Doubleclick to collapse">
+    <div id="account">
+        <%= render_menu :account_menu -%>
     </div>
-    <div class="links">
-      <%= yield :view_specific_links -%>
+    <%= content_tag(
+           'div',
+           "#{l(:label_logged_as)} #{link_to_user(User.current, :format => :username)}".html_safe,
+           :id => 'loggedas') if User.current.logged? %>
+    <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
+</div>
+
+<div id="header">
+    <% if User.current.logged? || !Setting.login_required? %>
+    <div id="quick-search">
+        <%= form_tag({:controller => 'search', :action => 'index', :id => @project}, :method => :get ) do %>
+        <%= hidden_field_tag(controller.default_search_scope, 1, :id => nil) if controller.default_search_scope %>
+        <label for='q'>
+          <%= link_to l(:label_search), {:controller => 'search', :action => 'index', :id => @project}, :accesskey => accesskey(:search) %>:
+        </label>
+        <%= text_field_tag 'q', @question, :size => 20, :class => 'small', :accesskey => accesskey(:quick_search) %>
+        <% end %>
+        <%= render_project_jump_box %>
     </div>
-  </div>
-  <div id="main">
-    <%= yield :main %>
+    <% end %>
+
+    <h1><%= page_header_title %>&nbsp;<%= breadcrumb_separator %><%= yield :breadcrumbs -%></h1>
+
+    <% if display_main_menu?(@project) %>
+    <div id="main-menu">
+        <%= render_main_menu(@project) %>
+    </div>
+    <% end %>
+</div>
+</div>
+<% end %>
+
+  <div id="main" class="rb-main rb-theme-default <%= sidebar_content? ? '' : 'nosidebar' %>">
+    <div id="sidebar">
+        <%= yield :sidebar %>
+        <%= view_layouts_base_sidebar_hook_response %>
+    </div>
+
+    <div id="content">
+      <%= render_flash_messages %>
+      <div id="rbcontentwrapper">
+      <div id="toolbar" class="rb-toolbar">
+        <% unless Backlogs.setting[:show_redmine_std_header] %>
+        <div class="breadcrumbs">
+          <%= render_project_jump_box %>
+          <span class="home"><%= link_to @project.name, :controller => :projects, :action => :show, :id => @project %></span>
+          <%= breadcrumb_separator %>
+          <%= yield :breadcrumbs -%>
+        </div>
+        <% end %>
+        <div class="userselect">
+          <%= yield :view_specific_users -%>
+        </div>
+        <div class="links">
+          <%= yield :view_specific_links -%>
+        </div>
+      </div>
+
+      <%= yield :main %>
+      </div>
+      <div style="clear:both;"></div>
+    </div>
   </div>
   <div id="helpers">
     <%= yield :helpers %>
   </div>
+</div>
+</div>
+</div>
 </body>
 </html>

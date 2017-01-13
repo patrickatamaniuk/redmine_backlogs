@@ -1,30 +1,54 @@
-<li class="model story <%= mark_if_closed(story) %>" id="<%= story_html_id_or_empty(story) %>">
-  <div class="id">
+<li class="model story fff-wrapper <%= mark_if_closed(story) %> tracker<%= story ? story.tracker_id : '' %>" id="<%= story_html_id_or_empty(story) %>">
+ <div class="fff-wrapmiddle">
+   <div class="story_field fff-middle">
+     <span class="editable subject" fieldname="subject" fieldlabel="<%=l(:field_subject)%>" fieldtype="textarea"><%=h story.subject %></span>
+     <span class="story_field">(<%= story.estimated_hours.to_f %> est h, <%= story.priority.name %> )</span>
+  </div>
+ </div>
+ <div class="fff-left">
+    <% qtip_cls = "story_tooltip"
+       qtip_cls = "story_tooltip_ajax" unless defined?(render_tooltip)  %>
+  <div class="id <%= qtip_cls %> story_field">
+    <div class="tooltip_text"><%= render :partial => "rb_stories/tooltip", :object => story if defined?(render_tooltip) %></div>
     <div class="t"><%= issue_link_or_empty(story) %></div>
     <div class="v"><%= id_or_empty(story) %></div>
   </div>
-  <div class="tracker_id editable" fieldtype="select" fieldname="tracker_id">
-    <div class="t"><%= tracker_name_or_empty(story) %></div>
+
+  <div class="project editable story_field" fieldtype="select" fieldname="project_id" fieldlabel="<%=l(:field_project_id)%>">
+    <div class="t"><%= story.project %></div>
+    <div class="v"><%= story.project_id %></div>
+  </div>
+
+  <div class="tracker_id editable story_field" fieldtype="select" fieldname="tracker_id" fieldlabel="<%=l(:field_tracker_id)%>">
+    <div class="t"><%= h tracker_name_or_empty(story) %></div>
     <div class="v"><%= tracker_id_or_empty(story) %></div>
   </div>
-  <div class="subject editable" fieldname="subject"><%=h story.subject %></div>
-  <div class="status_id editable" fieldtype="select" fieldname="status_id">
+ </div>
+ <div class="fff-right">
+  <div class="status_id editable story_field" fieldtype="select" fieldname="status_id" fieldlabel="<%=l(:field_status_id)%>">
     <div class="t"><%= status_label_or_default(story) %></div>
     <div class="v"><%= status_id_or_default(story) %></div>
   </div>
-  <% if Setting.plugin_redmine_backlogs[:story_points].blank? %>
-  <div class="story_points editable story_points_text" fieldname="story_points"><%= story_points_or_empty(story) %></div>
+  <% if Backlogs.setting[:story_points].blank? %>
+  <div class="story_points editable story_points_text story_field" fieldname="story_points" fieldlabel="<%=l(:story_points)%>" fieldtype="input"><%= story_points_or_empty(story) %></div>
   <% else %>
-  <div class="story_points editable story_points_select" fieldtype="select" fieldname="story_points">
-	  <% %w(t v).each do |c| %>
-		  <div class="<%=h c %>"><%= story_points_or_empty(story) %></div>
-	  <% end %>
+  <div class="story_points editable story_points_select story_field" fieldtype="select" fieldname="story_points" fieldlabel="<%=l(:story_points)%>">
+    <% %w(t v).each do |c| %>
+      <div class="<%=h c %>"><%= story_points_or_empty(story) %></div>
+    <% end %>
   </div>
   <% end %>
-  <div class="fixed_version_id"><%= story.fixed_version_id %></div>
-  <div class="user_status"><%= story.author == User.current ? '+' : '-' %>c<%= story.assigned_to == User.current ? '+' : '-' %>a</div>
-  <div class="higher_item_id"><%= story.higher_item.blank? ? '' : story.higher_item.id %></div>
+  <div class="fixed_version_id meta"><%= story.fixed_version_id %></div>
+  <div class="release_id meta"><%= story.release_id %></div>
+  <div class="user_status meta"><%= story.author == User.current ? '+' : '-' %>c<%= story.assigned_to == User.current ? '+' : '-' %>a</div>
+  <div class="story_project meta"><%= story.project_id %></div>
+  <% render_higher_item_id = false unless defined?(render_higher_item_id) %>
+  <% if render_higher_item_id %>
+  <div class="higher_item_id meta"><%= story.higher_item.nil? ? '' : story.higher_item.id %></div>
+  <% end %>
   <div class="meta">
-    <%= render :partial => "shared/model_errors", :object => story.errors %>
+    <%= render :partial => "backlogs/model_errors", :object => story.errors unless story.errors.empty? %>
   </div>
+ </div>
+  <div class="clearfix"></div>
 </li>

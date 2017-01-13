@@ -1,0 +1,34 @@
+<div class="contextual">
+<%= link_to_if_authorized l(:label_release_new),
+                          {:controller => 'rb_releases', :action => 'new', :project_id => @project},
+                          :class => 'icon icon-add' %>
+<%= link_to_if_authorized l(:label_releases_multi_view_new),
+                          {:controller => 'rb_releases_multi_view', :action => 'new', :project_id => @project},
+                          :class => 'icon icon-add' %>
+</div>
+
+<h2><%=l(:label_release_planning)%></h2>
+
+<% if @releases_open.empty? && @releases_closed.empty? %><p class="nodata"><%= l(:label_no_data) %></p><% end %>
+
+<% @releases_open.each do |release| %>
+    <%= render :partial => 'rb_releases/release', :object => release %>
+<% end %>
+
+<h2><%=l(:label_closed_releases)%></h2>
+<% @releases_closed.each do |release| %>
+    <%= render :partial => 'rb_releases/release', :object => release %>
+<% end %>
+
+<% content_for :sidebar do %>
+    <h3><%= l(:label_release_plural) %></h3>
+    <% if @releases_open.empty? %>
+        no releases
+    <% elsif @releases_open.size == 1 %>
+        one release
+    <% else %>
+        <%= @releases_open.size %> releases
+    <% end %>
+<% end %>
+
+<% html_title(l(:label_release_plural)) -%>

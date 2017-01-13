@@ -1,19 +1,20 @@
-<div class="backlog">
+<%
+  # Add special class on sprints shared system wide. Used for enabling DnD.
+  shared_system = ''
+  shared_system = 'shared-system-wide' if backlog[:sprint] && backlog[:sprint].sharing=='system'
+%>
+<% cls = '' unless defined?(cls) %>
+<div class="backlog<%= cls %> <%= shared_system %>">
   <div class="header">
-    <div class="menu">
-      <div class="icon ui-icon ui-icon-carat-1-s"></div>
-      <ul class="items">
-      </ul>
-    </div>
     <%- if backlog[:sprint] %>
-      <%= render :partial => "rb_sprints/sprint", :object => backlog[:sprint] %>
-      <div class="velocity"> </div>
+      <%= render :partial => "rb_sprints/sprint", :object => backlog[:sprint], :locals => {:cls => 'model sprint'} %>
+    <%- elsif backlog[:release] %>
+      <%= render :partial => "rb_releases/release_mbp", :object => backlog[:release], :as => :release %>
     <%- else %>
-      <div class="label"><%=l(:label_product_backlog).titleize %></div>
-      <%= link_to "Close completed Sprints", close_completed_project_versions_path(@project), :class => "close_sprint", :method => :put, :target => "_blank" %>
+      <%= render :partial => "productbacklog" %>
     <%- end %>
   </div>
-  <ul class="stories">
+  <ul id="stories-for-<%= backlog[:release] ? "release-#{backlog[:release].id}" : (backlog[:sprint] ? backlog[:sprint].id : 'product-backlog') %>" class="stories">
     <%= render :partial => "rb_stories/story", :collection => backlog[:stories] %>
   </ul>
 </div>

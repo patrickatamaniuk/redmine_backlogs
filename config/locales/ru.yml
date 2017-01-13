@@ -1,346 +1,213 @@
---- 
-ru: 
-  backlogs_active: !binary |
-    0LDQutGC0LjQstC90YvQuQ==
-
-  backlogs_any: !binary |
-    0LvRjtCx0L7QuQ==
-
-  backlogs_card_specification: !binary |
-    0KLQuNC/0Ysg0LzQtdGC0L7QuiDQtNC70Y8g0L/QtdGH0LDRgtC4INC60LDR
-    gNGC
-
-  backlogs_impediment: !binary |
-    0JfQsNC00LXRgNC20LrQsA==
-
-  backlogs_inactive: !binary |
-    0J/RgNC+0LXQutGCINC90LUg0L/QvtC60LDQt9GL0LLQsNC10YIg0LDQutGC
-    0LjQstC90L7RgdGC0Lg=
-
-  backlogs_points_burn_direction: !binary |
-    0KLQvtGH0LrQuCDRgSDRg9C60LDQt9Cw0L3QuNC10LwsINGB0LrQvtC70YzQ
-    utC+INGD0LbQtSDQstGL0L/QvtC70L3QtdC90L4g0LfQsNC00LDQvdC40Y8g
-    0Lgg0YHQutC+0LvRjNC60L4g0LXRidGRINC+0YHRgtCw0ZHRgtGB0Y8g0YHQ
-    tNC10LvQsNGC0Yw=
-
-  backlogs_product_backlog: !binary |
-    0JHRjdC60LvQvtCzINC/0YDQvtC00YPQutGC0LAgKNGB0L/QuNGB0L7QuiDR
-    gtGA0LXQsdC+0LLQsNC90LjQuSDQuiDRhNGD0L3QutGG0LjQvtC90LDQu9GM
-    0L3QvtGB0YLQuCwg0LrQvtGC0L7RgNGL0LUg0YPQv9C+0YDRj9C00L7Rh9C1
-    0L3RiyDQv9C+INGB0YLQtdC/0LXQvdC4INCy0LDQttC90L7RgdGC0Lgp
-
-  backlogs_product_backlog_is_empty: !binary |
-    0JHRjdC60LvQvtCzINC/0YDQvtC00YPQutGC0LAg0L/Rg9GB0YI=
-
-  backlogs_product_backlog_unsized: !binary |
-    0JLQtdGA0YUg0LHRjdC60LvQvtCz0LAg0L/RgNC+0LTRg9C60YLQsCDQuNC8
-    0LXQtdGCINC40YHRgtC+0YDQuNC4INGBINC90LXQvtC/0YDQtdC00LXQu9GR
-    0L3QvdGL0Lwg0YDQsNC30LzQtdGA0L7QvA==
-
-  backlogs_sizing_inconsistent: !binary |
-    0JjQt9C80LXQvdC10L3QuNC1INGA0LDQt9C80LXRgNC+0LIg0LjRgdGC0L7R
-    gNC40Lgg0L7RgtC90L7RgdC40YLQtdC70YzQvdC+INC40YUg0L7RhtC10L3Q
-    vtC6
-
-  backlogs_sprint_notes_missing: !binary |
-    0JfQsNC60YDRi9GC0YvQtSDRgdC/0YDQuNC90YLRiyDQsdC10Lcg0YDQtdGC
-    0YDQvtGB0L/QtdC60YLQuNCy0L3Ri9GFL9C+0LHQt9C+0YDQvdGL0YUg0LfQ
-    sNC80LXRh9Cw0L3QuNC5
-
-  backlogs_sprint_unestimated: !binary |
-    0JfQsNC60YDRi9GC0YvQtSDQuNC70Lgg0LDQutGC0LjQstC90YvQtSDRgdC/
-    0YDQuNC90YLRiyDRgSDQvdC10L7RhtC10L3RkdC90L3Ri9C80Lgg0LjRgdGC
-    0L7RgNC40Y/QvNC4
-
-  backlogs_sprint_unsized: !binary |
-    0J/RgNC+0LXQutGCINC40LzQtdC10YIg0LjRgdGC0L7RgNC40Lgg0L/QviDQ
-    sNC60YLQuNCy0L3Ri9C8INC40LvQuCDQvdC10LTQsNCy0L3QviDQt9Cw0LrR
-    gNGL0YLRi9C8INGB0L/RgNC40L3RgtCw0LwsINC00LvRjyDQutC+0YLQvtGA
-    0YvRhSDQvdC1INCx0YvQu9C4INGD0YHRgtCw0L3QvtCy0LvQtdC90Ysg0YDQ
-    sNC30LzQtdGA0Ys=
-
-  backlogs_sprints: !binary |
-    0KHQv9GA0LjQvdGC0Ys=
-
-  backlogs_story: !binary |
-    0JjRgdGC0L7RgNC40Y8=
-
-  backlogs_story_tracker: !binary |
-    0KLRgNC10LrQtdGA0Ysg0LjRgdGC0L7RgNC40Lg=
-
-  backlogs_task: !binary |
-    0JfQsNC00LDQvdC40LU=
-
-  backlogs_task_tracker: !binary |
-    0KLRgNC10LrQtdGAINC30LDQtNCw0L3QuNGP
-
-  backlogs_velocity_missing: !binary |
-    0KHQutC+0YDQvtGB0YLRjCDQtNC70Y8g0Y3RgtC+0LPQviDQv9GA0L7QtdC6
-    0YLQsCDQvdC1INC80L7QttC10YIg0LHRi9GC0Ywg0LLRi9GH0LjRgdC70LXQ
-    vdCw
-
-  backlogs_velocity_varies: !binary |
-    0KHQutC+0YDQvtGB0YLRjCDQt9C90LDRh9C40YLQtdC70YzQvdC+INC40LfQ
-    vNC10L3Rj9C10YLRgdGPINC/0L4g0YHQv9GA0LjQvdGC0LDQvA==
-
-  backlogs_wiki_template: !binary |
-    0KjQsNCx0LvQvtC9INC00LvRjyDRgdC/0YDQuNC90YLQsCDRgdGC0YDQsNC9
-    0LjRhtGLIHdpa2k=
-
-  button_edit_wiki: !binary |
-    0KDQtdC00LDQutGC0LjRgNC+0LLQsNGC0Ywg0YHRgtGA0LDQvdC40YbRgyB3
-    aWtp
-
-  comma_delimited_numbers: 
-  current_open_story_points: "Current open story points:"
-  error_blank: !binary |
-    0J3QtSDQvNC+0LbQtdGCINCx0YvRgtGMINGH0LjRgdGC0YvQvA==
-
-  error_greater_than_start_date: !binary |
-    0J3QtSDQvNC+0LbQtdGCINCx0YvRgtGMINGA0LDQvdGM0YjQtSwg0YfQtdC8
-    INC00LDRgtCwINC90LDRh9Cw0LvQsA==
-
-  error_inclusion: 
-  error_intro_plural: !binary |
-    0JHRi9C70Lgg0L7QsdC90LDRgNGD0LbQtdC90Ysg0YHQu9C10LTRg9GO0YnQ
-    uNC1INC+0YjQuNCx0LrQuDo=
-
-  error_intro_singular: !binary |
-    0JHRi9C70LAg0L7QsdC90LDRgNGD0LbQtdC90LAg0YHQu9C10LTRg9GO0YnQ
-    sNGPINC+0YjQuNCx0LrQsDo=
-
-  error_must_have_comma_delimited_list: !binary |
-    0LTQvtC70LbQvdC+INC40LzQtdGC0Ywg0LfQsNC/0Y/RgtGD0Y4sINGA0LDQ
-    t9C00LXQu9GP0Y7RidGD0Y4g0YHQv9C40YHQvtC6INC40YHRgtC+0YDQuNC4
-    INC40LvQuCBJRCDQt9Cw0LTQsNC90LjQuSA=
-
-  error_outro: !binary |
-    0J/QvtC20LDQu9GD0LnRgdGC0LAsINC40YHQv9GA0LDQstGM0YLQtSDQstGL
-    0YjQtdC/0YDQtdCy0LXQtNC10L3QvdGL0LUg0L7RiNC40LHQutC4INC/0LXR
-    gNC10LQg0YHQu9C10LTRg9GO0YnQuNC8INC30LDQv9GD0YHQutC+0Lwu
-
-  error_release_end_after_start: !binary |
-    0JTQsNGC0LAg0L7QutC+0L3Rh9Cw0L3QuNGPINCy0LXRgNGB0LjQuCDQtNC+
-    0LvQttC90LAg0LHRi9GC0Ywg0L/QvtGB0LvQtSDQtNCw0YLRiyAg0L3QsNGH
-    0LDQu9Cw
-
-  error_taken: 
-  event_sprint_description: |-
-    {{summary}}: {{url}}
-    {{description}}
-  event_sprint_summary: "{{project}}: {{summary}}"
-  field_backlogs_issue_type: !binary |
-    0KLQuNC/INCx0Y3QutC70L7Qs9Cw
-
-  field_blocks: !binary |
-    0JHQu9C+0LrQuNGA0L7QstC60Lg=
-
-  field_initial_estimate: 
-  field_initial_story_points: !binary |
-    0J3QsNGH0LDQu9GM0L3QsNGPINC+0YbQtdC90LrQsCDQuNGB0YLQvtGA0LjQ
-    uA==
-
-  field_name: !binary |
-    0J3QsNC30LLQsNC90LjQtQ==
-
-  field_number_of_snapshots: !binary |
-    0KHQvtGF0YDQsNC90ZHQvdC90YvQtSDRgdC90LjQvNC60Lgg0L7RhtC10L3Q
-    utC4
-
-  field_position: !binary |
-    0J/QvtC70L7QttC10L3QuNC1
-
-  field_release_end_date: !binary |
-    0JTQsNGC0LAg0L7QutC+0L3Rh9Cw0L3QuNGPINCy0LXRgNGB0LjQuA==
-
-  field_release_start_date: !binary |
-    0JTQsNGC0LAg0L3QsNGH0LDQu9CwINCy0LXRgNGB0LjQuA==
-
-  field_story_points: !binary |
-    0J7RhtC10L3QutCwINC40YHRgtC+0YDQuNC4ICjRh9C10LvQvtCy0LXQutC+
-    LdGH0LDRgdGLKQ==
-
-  field_subject: !binary |
-    0KHQvtC00LXRgNC20LDQvdC40LU=
-
-  field_tracker_id: !binary |
-    SUQg0YLRgNC10LrQtdGA0LA=
-
-  field_velocity_based_estimate: !binary |
-    0J7RhtC10L3QutCwINC90LAg0L7RgdC90L7QstC1INGB0LrQvtGA0L7RgdGC
-    0Lg=
-
-  label_back_to_project: !binary |
-    0J3QsNC30LDQtCDQvdCwINGB0YLRgNCw0L3QuNGG0YMg0L/RgNC+0LXQutGC
-    0LA=
-
-  label_backlogs: !binary |
-    0JHRjdC60LvQvtCz0Lg=
-
-  label_backlogs_unconfigured: !binary |
-    0JLRiyDQtdGJ0ZEg0L3QtSDQvtGC0LrQvtC90YTQuNCz0YPRgNC40YDQvtCy
-    0LDQu9C4INCx0Y3QutC70L7Qsy4g0J/QvtC20LDQu9GD0LnRgdGC0LAsINC/
-    0YDQvtC50LTQuNGC0LUge3thZG1pbmlzdHJhdGlvbn19ID4ge3twbHVnaW5z
-    fX0sINC30LDRgtC10Lwg0L3QsNC20LzQuNGC0LUge3tjb25maWd1cmV9fSDQ
-    tNC70Y8g0YHQvtC10LTQuNC90LXQvdC40Y8g0YEg0Y3RgtC40Lwg0L/Qu9Cw
-    0LPQuNC90L7QvC4g0J/QvtGB0LvQtSDRgtC+0LPQviwg0LrQsNC6INGD0YHR
-    gtCw0L3QvtCy0LjQu9C4INC/0L7Qu9GPLCDQstC+0LfQstGA0LDRidCw0LnR
-    gtC10YHRjCDQvdCw0LfQsNC0INC6INGN0YLQvtC5INGB0YLRgNCw0L3QuNGG
-    0LUsINGH0YLQvtCx0Ysg0L3QsNGH0LDRgtGMINC40YHQv9C+0LvRjNC30L7Q
-    stCw0L3QuNC1INGN0YLQvtCz0L4g0LjQvdGB0YLRgNGD0LzQtdC90YLQsC4=
-
-  label_burndown: !binary |
-    0JLRi9C/0L7Qu9C90LXQvdC40LU=
-
-  label_chart_options: !binary |
-    0JLRi9Cx0L7RgNGLINC60LDRgNGC0Ys=
-
-  label_hours: !binary |
-    0YfQsNGB0Ys=
-
-  label_hours_ideal: 
-  label_hours_remaining: 
-  label_hours_required_burn_rate: 
-  label_impediments: !binary |
-    0JfQsNC00LXRgNC20LrQuA==
-
-  label_master_backlog: !binary |
-    0JHRjdC60LvQvtCzINCg0YPQutC+0LLQvtC00LjRgtC10LvRjw==
-
-  label_not_prioritized: !binary |
-    0LHQtdC3INC/0YDQuNC+0YDQuNGC0LXRgtCw
-
-  label_points: !binary |
-    0YLQvtGH0LrQuA==
-
-  label_points_accepted: 
-  label_points_burn_down: !binary |
-    0KHQutC+0LvRjNC60L4g0L7RgdGC0LDQu9C+0YHRjCDQstGL0L/QvtC70L3Q
-    uNGC0Yw=
-
-  label_points_burn_up: !binary |
-    0KHQutC+0LvRjNC60L4g0LLRi9C/0L7Qu9C90LXQvdC+
-
-  label_points_committed: 
-  label_points_required_burn_rate: 
-  label_points_resolved: 
-  label_points_to_accept: 
-  label_points_to_resolve: 
-  label_product_backlog: !binary |
-    0LHRjdC60LvQvtCzINC/0YDQvtC00YPQutGC0LA=
-
-  label_product_cards: !binary |
-    0JrQsNGA0YLRiyDQsdGN0LrQu9C+0LPQsCDQv9GA0L7QtNGD0LrRgtCw
-
-  label_release: !binary |
-    0JLQtdGA0YHQuNGP
-
-  label_release_end_date: 
-  - - !binary |
-      0J/QvtC70LVf0LTQsNGC0Ytf0L7QutC+0L3Rh9Cw0L3QuNGPX9Cy0LXRgNGB
-      0LjQuA==
-
-  label_release_new: !binary |
-    0J3QvtCy0LDRjyDQstC10YDRgdC40Y8=
-
-  label_release_planning: !binary |
-    0J/Qu9Cw0L3QuNGA0L7QstCw0L3QuNC1INCy0LXRgNGB0LjQuA==
-
-  label_release_plural: !binary |
-    0JLQtdGA0YHQuNC4
-
-  label_release_start_date: 
-  - - !binary |
-      0J/QvtC70LVf0LTQsNGC0Ytf0L3QsNGH0LDQu9CwX9Cy0LXRgNGB0LjQuA==
-
-  label_scrum_statistics: !binary |
-    0KHRgtCw0YLQuNGB0YLQuNC60Lgg0YHQutGA0LDQvNCw
-
-  label_select_all: !binary |
-    0JLRi9Cx0YDQsNGC0Ywg0LLRgdGR
-
-  label_sprint_backlog: !binary |
-    INCx0Y3QutC70L7QsyDRgdC/0YDQuNC90YLQsA==
-
-  label_sprint_cards: !binary |
-    0JrQsNGA0YLRiyDRgdC/0YDQuNC90YLQsA==
-
-  label_sprint_impediments: !binary |
-    0J/RgNC10L/Rj9GC0YHRgtCy0LjRjyDQtNC70Y8g0KHQv9GA0LjQvdGC0LA=
-
-  label_sprint_name: !binary |
-    0KHQv9GA0LjQvdGCICJ7e25hbWV9fSI=
-
-  label_sprint_velocity: !binary |
-    0KHQutC+0YDQvtGB0YLRjCB7e3ZlbG9jaXR5fX0sINC+0YHQvdC+0LLQsNC9
-    0L3QsNGPINC90LAg0YHQv9GA0LjQvdGC0LDRhSB7e3NwcmludHN9fSDRgdC+
-    INGB0YDQtdC00L3QuNC8INC60L7Qu9C40YfQtdGB0YLQstC+0Lwg0LTQvdC1
-    0Lkge3tkYXlzfX0u
-
-  label_stories: !binary |
-    0JjRgdGC0L7RgNC40Lg=
-
-  label_stories_tasks: !binary |
-    0JjRgdGC0L7RgNC40Lgv0JfQsNC00LDQvdC40Y8=
-
-  label_task_board: !binary |
-    0JTQvtGB0LrQsCDQt9Cw0LTQsNC90LjQuQ==
-
-  label_webcal: !binary |
-    0J/QvtC00LDRh9CwIFdlYi3QutCw0LvQtdC90LTQsNGA0Y8g0YHQvtCx0YvR
-    gtC40LkgKFdlYmNhbCk=
-
-  rb_label_copy_tasks: !binary |
-    0JrQvtC/0LjRgNC+0LLQsNGC0Ywg0LfQsNC00LDQvdC40Y8=
-
-  rb_label_copy_tasks_all: !binary |
-    0JLRgdC1ICjQmtC+0L/QuNGA0L7QstCw0YLRjCDQstGB0LUg0LfQsNC00LDQ
-    vdC40Y8p
-
-  rb_label_copy_tasks_none: !binary |
-    0J3QtdGCICjQndC1INC60L7Qv9C40YDQvtCy0LDRgtGMINC30LDQtNCw0L3Q
-    uNGPKQ==
-
-  rb_label_copy_tasks_open: !binary |
-    0J7RgtC60YDRi9GC0Yw=
-
-  rb_label_link_to_original: !binary |
-    0LLQutC70Y7Rh9C40YLRjCDRgdGB0YvQu9C60YMg0L3QsCDQvtGA0LjQs9C4
-    0L3QsNC70YzQvdGD0Y4g0LjRgdGC0L7RgNC40Y4=
-
-  rb_task_cards_stories_then_tasks: 
-  rb_task_cards_story_follows_tasks: 
-  rb_task_cards_tasks_follow_story: 
-  rb_taskboard_card_order: 
-  release_create_snapshot_today: !binary |
-    0KHQvtGF0YDQsNC90LjRgtGMINGB0L3QuNC80L7QuiDQvtGG0LXQvdC60Lgg
-    0LjRgdGC0L7RgNC40LggINC90LAg0YHQtdCz0L7QtNC90Y/RiNC90Y7RjiDQ
-    tNCw0YLRgw==
-
-  release_update_snapshot_today: !binary |
-    0J7QsdC90L7QstC40YLRjCDRgdC90LjQvNC+0Log0L7RhtC10L3QutC4INC4
-    0YHRgtC+0YDQuNC4ICDQvdCwINGB0LXQs9C+0LTQvdGP0YjQvdGO0Y4g0LTQ
-    sNGC0YM=
-
-  remaining_story_points: !binary |
-    0J7RgdGC0LDQstGI0LjQtdGB0Y8g0L7RhtC10L3QutC4INC40YHRgtC+0YDQ
-    uNC4
-
-  today_not_in_release_msg: !binary |
-    0KLQtdC60YPRidCw0Y8g0LTQsNGC0LAg0L3QtSDQvdCw0YXQvtC00LjRgtGB
-    0Y8g0LIg0L/RgNC10LTQtdC70LDRhSDQtNCw0YIg0LLQtdGA0YHQuNC4LiDQ
-    ktGLINC00LXQudGB0YLQstC40YLQtdC70YzQvdC+INGF0L7RgtC40YLQtSDR
-    gdC+0YXRgNCw0L3QuNGC0Ywg0YHQvdC40LzQvtC6Pw==
-
-  today_not_in_release_warning: !binary |
-    0J/RgNC10LTRg9C/0YDQtdC20LTQtdC90LjQtTog0YLQtdC60YPRidCw0Y8g
-    0LTQsNGC0LAg0L3QtSDQvdCw0YXQvtC00LjRgtGB0Y8g0LIg0L/RgNC10LTQ
-    tdC70LDRhSDQtNCw0YIg0LLQtdGA0YHQuNC4LiDQktGLINC00LXQudGB0YLQ
-    stC40YLQtdC70YzQvdC+INC20LXQu9Cw0LXRgtC1INGB0L7RhdGA0LDQvdC4
-    0YLRjCDRgdC90LjQvNC+0Lo/
-
-  todo_issue_description: |-
-    {{summary}}: {{url}}
-    {{description}}
-  todo_issue_summary: "{{type}}: {{summary}}"
-  use_free_text_if_empty: 
+---
+ru:
+  backlogs_active: активный
+  backlogs_any: любой
+  backlogs_auto_assign_task: "Автоназначить задачу текущему пользователю"
+  backlogs_burndown_print_height: "Высота графика выполнения"
+  backlogs_burndown_print_width: "Ширина графика выполнения"
+  backlogs_burndown_settings: "Настройки графика выполнения"
+  backlogs_card_specification: "Тип заголовков для печати карт"
+  backlogs_default_story_tracker: "Default story tracker"
+  backlogs_general_settings: "Общие настройки"
+  backlogs_impediment: Задержка
+  backlogs_include_sat_and_sun: "Включать субботу и воскресенье в график выполнения"
+  backlogs_new_story_position: "Вновь создаемые истории попадают"
+  backlogs_new_story_position_bottom: "вниз (требует перезапуска)"
+  backlogs_new_story_position_top: вверх
+  backlogs_not_all_themes_are_supported: "Не все темы поддерживаются"
+  backlogs_pblpage_settings: "Настройка страницы бэклога продукта"
+  backlogs_points_burn_direction: "Баллов выполнено/осталось"
+  backlogs_product_backlog: "Бэклог продукта"
+  backlogs_scrum_stats_menu_application: "Application menu"
+  backlogs_scrum_stats_menu_none: None
+  backlogs_scrum_stats_menu_position: "Position of Scrum Statistics menu"
+  backlogs_scrum_stats_menu_top: "Top menu"
+  backlogs_set_start_and_duedates_from_sprint: "Установить дату начала и окончания истории из спринта"
+  backlogs_sharing_enabled: "Разрешить совместное использование"
+  backlogs_sharing_new_sprint: "Использовать совместно новые спринты"
+  backlogs_sharing_new_sprint_explanation: "Несмотря на то, что все возможные опции доступны здесь, новые спринты могут совместно использоваться только в соответствии с правами пользователей и разрешениями проектов. Используемые совместно на уровне системы спринты могут быть созданы только админами. Спринты, используемые совместно на уровне иерархии или дерева требуют разрешений на проекте верхнего уровня."
+  backlogs_sharing_support: "Совместное использование бэклогов"
+  backlogs_show_in_scrum_stats: "Показывать проект в Скрам-статистике"
+  backlogs_show_priority: "Show task priority on taskboard"
+  backlogs_show_redmine_std_header: "Показывать заголовок трекера в бэклогах"
+  backlogs_show_stories_from_subprojects_in_backlog: "Показывать в бэклоге истории из подпроектов"
+  backlogs_sprint_card_settings: "Печать карт спринта"
+  backlogs_sprint_sort_order: "Сортировать спринты по дате начала"
+  backlogs_sprint_sort_order_asc: "по возрастанию"
+  backlogs_sprint_sort_order_desc: "по убыванию"
+  backlogs_sprints: Спринты
+  backlogs_statistics_active: "В проекте есть активность"
+  backlogs_statistics_active_failed: "В проекте нет активности"
+  backlogs_statistics_committed_velocity_stable: "Скорость команды стабильна на протяжении спринтов"
+  backlogs_statistics_committed_velocity_stable_failed: "Скорость команды нестабильна на протяжении спринтов"
+  backlogs_statistics_hours_per_point: "%{value} часов на 1 балл в среднем"
+  backlogs_statistics_product_backlog_filled: "Бэклог продукта содержит истории"
+  backlogs_statistics_product_backlog_filled_failed: "Бэклог продукта пуст"
+  backlogs_statistics_product_backlog_sized: "Начало бэклога содержит истории с длительностью"
+  backlogs_statistics_product_backlog_sized_failed: "Начало бэклога содержит истории без длительности"
+  backlogs_statistics_sizing_consistent: "Длительности историй близки к их оценке"
+  backlogs_statistics_sizing_consistent_failed: "Длительности историй отличаются от их оценок"
+  backlogs_statistics_sizing_stddev: "Стандартное отклонение стоимости 1 балла в часах: %{value} часов"
+  backlogs_statistics_spent_hours_per_point: "%{value} часов потрачено на 1 балл в среднем"
+  backlogs_statistics_sprint_notes_available: "Недавние спринты закрыты с ретроспективой / заметками"
+  backlogs_statistics_sprint_notes_available_failed: "Недавние спринты закрыты без ретроспективы / заметок"
+  backlogs_statistics_sprints: "Измерено по %{value} спринтам"
+  backlogs_statistics_sprints_estimated: "Активные и недавно закрытые спринты имеют оценку историй"
+  backlogs_statistics_sprints_estimated_failed: "Закрытые или активные спринты содержат неоцененные истории"
+  backlogs_statistics_sprints_sized: "Активные и недавно закрытые спринты имеют длительность"
+  backlogs_statistics_sprints_sized_failed: "Проект содержит истории без длительности в активных или недавно закрытых спринтах"
+  backlogs_statistics_velocity: "Скорость: %{value}"
+  backlogs_statistics_velocity_stddev: "Стандартное отклонение скорости: %{value} баллов"
+  backlogs_statistics_yield: "Проект имеет хорошую среднюю производительность"
+  backlogs_statistics_yield_failed: "Проект имеет низкую среднюю производительность"
+  backlogs_story: История
+  backlogs_story_close_status: "Когда все задачи закрыты, менять статус истории на:"
+  backlogs_story_follow_task_status_close: "Закрывать когда все задачи закрыты"
+  backlogs_story_follow_task_status_loose: "Менять вслед за средним прогрессом задач"
+  backlogs_story_follow_task_status_nil: Отключено
+  backlogs_story_follows_task_loose_explanation: "Note: all issue statuses require a valid %done between 0 and 100."
+  backlogs_story_follows_task_status: "История наследует статус задач"
+  backlogs_story_settings: "Настройки историй и задач"
+  backlogs_story_tracker: "Трекеры историй"
+  backlogs_task: Задача
+  backlogs_task_tracker: "Трекер задач"
+  backlogs_wiki_template: "Шаблон для страницы спринта в Вики"
+  button_edit_wiki: "Редактировать страницу Вики"
+  comma_delimited_numbers: "Числа, разделенные запятыми"
+  current_open_story_points: "Баллы текущей открытой истории:"
+  error_blank: "не может быть пустым"
+  error_greater_than_start_date: "не может быть раньше, чем дата начала"
+  error_inclusion: "не включен в список"
+  error_intro_plural: "Произошли ошибки:"
+  error_intro_singular: "Произошла ошибка:"
+  error_must_have_comma_delimited_list: "должен быть список из идентификаторов историй или задач, разделенный запятыми"
+  error_no_workflow_for_task_tracker: "У вас нет доступа к трекеру задач. Если вы считаете, что это ошибка, свяжитесь с администратором."
+  error_outro: "Пожалуйста, исправьте перечисленные выше ошибки перед тем, как вносить изменения снова."
+  error_release_end_after_start: "Дата окончания релиза должна быть позже, чем дата начала"
+  error_sprint_end_before_start: "Спринт не может заканчиваться до того, как начинается"
+  error_taken: "уже используется"
+  event_sprint_summary: "%{project}: %{summary}"
+  field_assigned_to: Назначена
+  field_backlogs_issue_type: "Тип бэклога"
+  field_base: ""
+  field_blocks: Блокировки
+  field_name: Название
+  field_planned_velocity: "Planned velocity"
+  field_position: Положение
+  field_priority: Приоритет
+  field_project_id: "Идентификатор проекта"
+  field_release: Релиз
+  field_release_end_date: "Дата окончания релиза"
+  field_release_relationship: "Release relationship"
+  field_release_start_date: "Дата начала релиза"
+  field_remaining_hours: "Осталось (часов)"
+  field_story_points: "Оценка истории (в баллах)"
+  field_subject: Тема
+  field_task_color: "Task color"
+  field_time_entry_comments: "Time Entry Comments"
+  field_time_entry_hours: "Time Entry Hours"
+  field_time_entry_spend_on: "Time Entry Spend on"
+  field_time_entry_user_id: "Time Entry User Id"
+  field_tracker_id: "Идентификатор трекера"
+  field_velocity_based_estimate: "Оценка на основе скорости"
+  label_all_tasks: "Все задачи"
+  label_back_to_project: "Назад на страницу проекта"
+  label_backlogs: Бэклоги
+  label_backlogs_unconfigured: "Вы еще не настроили модуль Бэклогов. Пожалуйста, передите в %{administration} > %{plugins}, затем кликните по ссылке %{configure} для этого плагина. Как только вы все настроите, возвращайтесь на эту страницу, чтобы начать использовать инструменты."
+  label_burndown: "График выполнения"
+  label_chart_options: "Настройки графика"
+  label_close_completed_sprints: "Закрыть выполненные спринты"
+  label_closed_releases: "Закрытые релизы"
+  label_column_width: "Ширина колонки"
+  label_download_sprint: Скачать
+  label_filter_tasks: "Фильтровать по пользователю"
+  label_filter_tasks_my_tasks: "Фильтровать по пользователю - мои задачи"
+  label_hide_completed_sprints: "Спрятать выполненные спринты"
+  label_hours: часы
+  label_hours_remaining: "осталось часов"
+  label_hours_required_burn_rate: "требуемая скорость выполнения (часов в день)"
+  label_ideal: "идеальное выполнение"
+  label_impediments: Задержки
+  label_master_backlog: Бэклоги
+  label_my_tasks: "Мои задачи"
+  label_new_sprint: "Новый спринт"
+  label_new_story: "Новая история"
+  label_no_data_to_show: "Нет информации"
+  label_no_end: "нет окончания"
+  label_no_start: "нет начала"
+  label_not_prioritized: "не приоритезированы"
+  label_points: баллы
+  label_points_accepted: "баллов принято"
+  label_points_added: "баллов добавлено"
+  label_points_backlog: "баллов в бэклоге"
+  label_points_burn_down: "Осталось выполнить"
+  label_points_burn_up: Выполнено
+  label_points_committed: "баллов запланировано"
+  label_points_required_burn_rate: "требуемая скорость выполнения (в баллах)"
+  label_points_resolved: "баллов решено"
+  label_points_to_accept: "баллов не принято"
+  label_points_to_resolve: "баллов не решено"
+  label_product_backlog: "Бэклог продукта"
+  label_product_cards: "Карты бэклога продукта"
+  label_release: Релиз
+  label_release_end_date: "Дата окончания релиза"
+  label_release_new: "Новый релиз"
+  label_release_planned_velocity_end_date: "Planned velocity estimated end date"
+  label_release_planning: "Планирование релиза"
+  label_release_plural: Релизы
+  label_release_relationship_added: Added
+  label_release_relationship_auto: Auto
+  label_release_relationship_continued: Continued
+  label_release_relationship_initial: Initial
+  label_release_start_date: "Дата начала релиза"
+  label_release_trend_end_date: "Trend estimated end date"
+  label_reset: Сбросить
+  label_scrum_statistics: Скрам-статистика
+  label_select_all: "Выбрать все"
+  label_show_completed_sprints: "Показать выполненные спринты"
+  label_sprint_backlog: "бэклог спринта"
+  label_sprint_cards: "Карты спринта"
+  label_sprint_impediments: "Задержки спринта"
+  label_sprint_name: "Спринт %{name}"
+  label_stories: Истории
+  label_stories_tasks: Истории/Задачи
+  label_task_board: "Доска задач"
+  label_view_options: "Посмотреть настройки"
+  label_webcal: "Лента веб-календаря"
+  rb_auto_refresh: "Автоматически обновлять бэклоги / доску задач (в секундах)"
+  rb_burndown_timezone: "Часовой пояс для границы дня выполнения"
+  rb_burndown_timezone_explanation: |-
+      Чтобы поддерживать команды из разных стран, расчеты для графиков выполнения используют общую концепцию начала дня.
+      Ваш часовой пояс %{user_timezone}, часовой пояс сервера %{server_timezone}, а для расчета графика выполнения используется часовой пояс %{burndown_timezone}.
+      Примечание: Имеющаяся информация не меняется при изменении этой настройки.
+  rb_label_copy_tasks: "Копировать задачи"
+  rb_label_copy_tasks_all: Все
+  rb_label_copy_tasks_none: Никакие
+  rb_label_copy_tasks_open: Открытые
+  rb_label_link_to_original: "Включить ссылку на исходную историю"
+  rb_label_timelog_disable: Запретить
+  rb_label_timelog_enable: Разрешить
+  rb_project_settings_update_error: "Ошибка при сохранении настроек"
+  rb_project_settings_updated: "Настройки сохранены"
+  rb_release_burnup_enabled: "Enable release burnup chart (EXPERIMENTAL)"
+  rb_show_burndown_in_sidebar: "Показывать график выполнения в боковой колонке задач"
+  rb_show_project_name: "Показывать имя проекта в бэклоге"
+  rb_task_cards_stories_then_tasks: "Сначала все истории, затем все задачи"
+  rb_task_cards_story_follows_tasks: "История следует за своими задачами"
+  rb_task_cards_tasks_follow_story: "Задачи следуют за своей историей"
+  rb_taskboard_card_order: "Порядок печати карт"
+  rb_timelog_from_taskboard: "Записывать время с доски задач"
+  remaining_story_points: "Оставшиеся баллы истории"
+  story_description: Описание
+  story_estimation_hours: "Оценка (часов)"
+  story_points: Баллы
+  story_remaining_hours: "Осталось (часов)"
+  story_spent_time: "Потрачено времени"
+  story_status: Статус
+  today_not_in_release_warning: "Предупреждение: текущая дата вне периода текущего релиза."
+  todo_issue_summary: "%{type}: %{summary}"
+  use_free_text_if_empty: "Если список пуст, будет использовано текстовое поле"
+  warning_reset_sprint: |-
+      ВЫ СОБИРАЕТЕСЬ СБРОСИТЬ СПРИНТ!
+      Вы уверены, что хотите это сделать? Сброс спринта повлияет на истории и задачи следующим образом:
+      * Дата создания будет приравнена к начальной дате спринта * Все изменения в задачах и историях кроме комментариев будут УДАЛЕНЫ * Текущее значение всех свойств историй / задач станет начальным * Состояние получит значение по умолчанию

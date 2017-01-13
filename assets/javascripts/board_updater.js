@@ -5,25 +5,25 @@
 ***************************************/
 
 RB.BoardUpdater = RB.Object.create({
-  
+
   initialize: function(){
     var self = this;
-    
-    RB.$('#refresh').bind('click', function(e,u){ self.handleRefreshClick(e,u) });
-    RB.$('#disable_autorefresh').bind('click', function(e,u){ self.handleDisableAutorefreshClick(e,u) });
+
+    RB.$('#refresh').bind('click', function(e,u){ self.handleRefreshClick(e,u); });
+    RB.$('#disable_autorefresh').bind('click', function(e,u){ self.handleDisableAutorefreshClick(e,u); });
 
     this.loadPreferences();
-    this.pollWait = 1000;
-    this.poll()
+    this.pollWait = RB.constants.autorefresh_wait;
+    this.poll();
   },
 
   adjustPollWait: function(itemsReceived){
     itemsReceived = (itemsReceived==null) ? 0 : itemsReceived;
-    
+
     if(itemsReceived==0 && this.pollWait < 300000 && !RB.$('body').hasClass('no_autorefresh')){
       this.pollWait += 250;
     } else {
-      this.pollWait = 1000;
+      this.pollWait = RB.constants.autorefresh_wait;
     }
   },
 
@@ -33,12 +33,12 @@ RB.BoardUpdater = RB.Object.create({
     RB.ajax({
       type      : "GET",
       url       : RB.urlFor('show_updated_items', { id: RB.constants.project_id} ) + '?' + self.params,
-      data      : { 
+      data      : {
                     since : RB.$('#last_updated').text()
                   },
-      beforeSend: function(){ RB.$('body').addClass('loading')  },
-      success   : function(d,t,x){ self.processData(d,t,x)  },
-      error     : function(){ self.processError() }
+      beforeSend: function(){ RB.$('body').addClass('loading');  },
+      success   : function(d,t,x){ self.processData(d,t,x);  },
+      error     : function(){ self.processError(); }
     });
   },
 
@@ -46,7 +46,7 @@ RB.BoardUpdater = RB.Object.create({
     RB.$('body').toggleClass('no_autorefresh');
     RB.UserPreferences.set('autorefresh', !RB.$('body').hasClass('no_autorefresh'));
     if(!RB.$('body').hasClass('no_autorefresh')){
-      this.pollWait = 1000;
+      this.pollWait = RB.constants.autorefresh_wait;
       this.poll();
     }
     this.updateAutorefreshText();
@@ -70,7 +70,7 @@ RB.BoardUpdater = RB.Object.create({
   poll: function() {
     if(!RB.$('body').hasClass('no_autorefresh')){
       var self = this;
-      setTimeout(function(){ self.getData() }, self.pollWait);
+      setTimeout(function(){ self.getData(); }, self.pollWait);
     } else {
       return false;
     }
@@ -81,20 +81,26 @@ RB.BoardUpdater = RB.Object.create({
   },
 
   processData: function(data, textStatus, xhr){
-    var self = this;
+    var self = this, latest_update;
 
     RB.$('body').removeClass('loading');
 
-    var latest_update = RB.$(data).find('#last_updated').text();
-    if(latest_update.length > 0) RB.$('#last_updated').text(latest_update);
+    latest_update = RB.$(data).find('#last_updated').text();
+    if(latest_update.length > 0) {
+        RB.$('#last_updated').text(latest_update);
+    }
+    sprintestimatedhours = RB.$(data).find('#sprintestimatedhours').text();
+    if(sprintestimatedhours.length > 0) {
+        RB.$('#sprintestimatedhours').text(sprintestimatedhours);
+    }
 
     self.processAllItems(data);
     self.adjustPollWait(RB.$(data).children(":not(.meta)").length);
     self.poll();
   },
-  
+
   processError: function(){
-    this.adjustPollWait(0); 
+    this.adjustPollWait(0);
     this.poll();
   },
 

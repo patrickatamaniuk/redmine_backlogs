@@ -1,0 +1,37 @@
+<%
+# We cannot rely on rb_form_helper being present here
+#  - in case there is another plugin hooking into ProjectsHelpers - e.g. RemindCRM
+# so we duplicate the rb_form_for code here and do not monkeypatch RbFormHelper into ProjectsHelper.
+  def rb_pr_form_for(*args, &proc)
+    form_string = form_for(*args, &proc)
+    if Rails::VERSION::MAJOR < 3
+      form_string
+    else
+      concat(form_string)
+    end
+  end
+  rb_pr_form_for @project,
+                   :as => :rb_project_settings,
+                   :url => { :controller => 'rb_project_settings',
+                             :action => 'project_settings', :project_id => @project },
+                   :html => {:id => 'backlogs-form',
+                             :method => :post} do |f| %>
+
+<%= error_messages_for 'rb_project_settings' %>
+
+<div class="box">
+<% if Backlogs.setting[:sharing_enabled] %>
+  <p>
+    <%= content_tag(:label, l(:backlogs_show_stories_from_subprojects_in_backlog)) %>
+    <%= check_box_tag("settings[show_stories_from_subprojects]", 'enabled',
+        @project.rb_project_settings.show_stories_from_subprojects) %>
+  </p>
+<% end %>
+<p>
+  <%= content_tag(:label, l(:backlogs_show_in_scrum_stats)) %>
+  <%= check_box_tag("settings[show_in_scrum_stats]", 'enabled',
+      @project.rb_project_settings.show_in_scrum_stats) %>
+</p>
+</div>
+<%= submit_tag(l(:button_save)) %>
+<% end %>

@@ -1,16 +1,14 @@
 /***************************************
-  MODEL
+  MODEL FIXME: rename this to EDITABLE
   Common methods for sprint, issue,
   story, task, and impediment
+  mostly about editing these.
 ***************************************/
 
 RB.Model = RB.Object.create({
 
   initialize: function(el){
-    var j;  // This ensures that we use a local 'j' variable, not a global one.
-    var self = this;
-    
-    this.$ = j = RB.$(el);
+    this.$ = RB.$(el);
     this.el = el;
   },
 
@@ -39,8 +37,12 @@ RB.Model = RB.Object.create({
     // Do nothing. Child objects may or may not override this method
   },
 
-  cancelEdit: function(){
+  cancelEdit: function(obj){
     this.endEdit();
+    if (typeof obj == 'undefined') {
+        obj = this;
+    }
+    obj.$.find('.editors').remove();
     if(this.isNew()){
       this.$.hide('blind');
     }
@@ -51,7 +53,7 @@ RB.Model = RB.Object.create({
   },
 
   copyFromDialog: function(){
-    var editors = this.$.find(".editors").length==0 ? RB.$(document.createElement("div")).addClass("editors").appendTo(this.$) : this.$.find(".editors").first();
+    var editors = (!this.$.find(".editors").length) ? RB.$(document.createElement("div")).addClass("editors").appendTo(this.$) : this.$.find(".editors").first();
     editors.html("");
     editors.append(RB.$("#" + this.getType().toLowerCase() + "_editor").children(".editor"));
     this.saveEdits();
@@ -63,11 +65,11 @@ RB.Model = RB.Object.create({
     
     editor.dialog({
       buttons: {
-        "Cancel" : function(){ self.cancelEdit(); RB.$(this).dialog("close") },
-        "OK" : function(){ self.copyFromDialog(); RB.$(this).dialog("close") }
+        "Cancel" : function(){ self.cancelEdit(); RB.$(this).dialog("close"); },
+        "OK" : function(){ self.copyFromDialog(); RB.$(this).dialog("close"); }
       },
-      close: function(event, ui){ if(event.which==27) self.cancelEdit() },
-      dialogClass: self.getType().toLowerCase() + '_editor_dialog',
+      close: function(event, ui){ if(event.which==27) self.cancelEdit(); },
+      dialogClass: self.getType().toLowerCase() + '_editor_dialog rb_editor_dialog',
       modal: true,
       position: [pos.left - RB.$(document).scrollLeft(), pos.top - RB.$(document).scrollTop()],
       resizable: false,
@@ -84,11 +86,12 @@ RB.Model = RB.Object.create({
     
     this.$.find('.editable').each(function(index){
       var field = RB.$(this);
-      var fieldType = field.attr('fieldtype')!=null ? field.attr('fieldtype') : 'input';
+      var fieldType = field.attr('fieldtype') ? field.attr('fieldtype') : 'input';
       var fieldName = field.attr('fieldname');
+      var fieldLabel = field.attr('fieldlabel');
       var input;
       
-      RB.$(document.createElement("label")).text(fieldName.replace(/_/ig, " ").replace(/ id$/ig,"")).appendTo(editor);
+      RB.$(document.createElement("label")).text(fieldLabel).appendTo(editor);
       input = fieldType=='select' ? RB.$('#' + fieldName + '_options').clone(true) : RB.$(document.createElement(fieldType));
       input.removeAttr('id');
       input.attr('name', fieldName);
@@ -96,6 +99,7 @@ RB.Model = RB.Object.create({
       input.addClass('editor');
       input.removeClass('template');
       input.removeClass('helper');
+      input.attr('_rb_width', field.width());
       // Add a date picker if field is a date field
       if (field.hasClass("date")){
         input.datepicker({ changeMonth: true,
@@ -103,25 +107,31 @@ RB.Model = RB.Object.create({
                            closeText: 'Close',
                            dateFormat: 'yy-mm-dd', 
                            firstDay: 1,
-                           onClose: function(){ RB.$(this).focus() },
+                           onClose: function(){ RB.$(this).focus(); },
                            selectOtherMonths: true,
                            showAnim:'',
                            showButtonPanel: true,
                            showOtherMonths: true
                        });
         // So that we won't need a datepicker button to re-show it
-        input.bind('mouseup', function(event){ RB.$(this).datepicker("show") });
+        input.bind('mouseup', function(event){ RB.$(this).datepicker("show"); });
       }
       
       // Copy the value in the field to the input element
-      value = ( fieldType=='select' ? field.children('.v').first().text() : field.text() );
+      value = ( fieldType=='select' ? field.children('.v').first().text() : RB.$.trim(field.text()) );
+
+      // Select default value for select fields if none is already selected
+      if ((fieldType=='select') && input.children("option[selected='selected']") && value == '') {
+    	  value = input.children("option[selected='selected']:first").val();
+      }
+
       input.val(value);
       
       // Record in the model's root element which input field had the last focus. We will
       // use this information inside RB.Model.refresh() to determine where to return the
       // focus after the element has been refreshed with info from the server.
-      input.focus( function(){ self.$.data('focus', RB.$(this).attr('name')) } )
-            .blur( function(){ self.$.data('focus', '') } );
+      input.focus( function(){ self.$.data('focus', RB.$(this).attr('name')); } ).
+            blur( function(){ self.$.data('focus', ''); } );
       
       input.appendTo(editor);
     });
@@ -133,7 +143,7 @@ RB.Model = RB.Object.create({
   
   // Override this method to change the dialog title
   editDialogTitle: function(){
-    return "Edit " + this.getType()
+    return "Edit " + this.getType();
   },
   
   editorDisplayed: function(editor){
@@ -153,7 +163,7 @@ RB.Model = RB.Object.create({
     if (!msg) { msg = xhr.responseText.match(/<h1>[\s\S]*?<\/h1>/i); }
     if (!msg) { msg = xhr.responseText; }
     if (msg instanceof Array) { msg = msg[0]; }
-    if (!msg || msg.length == 0) {
+    if (!msg || !msg.length) {
       msg = 'an error occured, please check the server logs (' + xhr.statusText + ')';
       RB.Dialog.notice(xhr.statusText + ': ' + xhr.responseText);
     }
@@ -166,16 +176,17 @@ RB.Model = RB.Object.create({
     // Create the model editor if it does not yet exist
     var editor_id = this.getType().toLowerCase() + "_editor";
     var editor = RB.$("#" + editor_id).html("");
-    if(editor.length==0){
-      editor = RB.$( document.createElement("div") )
-                 .attr('id', editor_id)
-                 .appendTo("body");
+    if(!editor.length){
+      editor = RB.$( document.createElement("div") ).
+                 attr('id', editor_id).
+                 addClass('rb_editor').
+                 appendTo("body");
     }
     return editor;
   },
   
   getID: function(){
-    return this.$.children('.id').children('.v').text();
+    return this.$.find('.id .v').text();
   },
   
   getType: function(){
@@ -183,6 +194,7 @@ RB.Model = RB.Object.create({
   },
     
   handleClick: function(event){
+    if(event.button !== 0) return; // only respond to left click
     var field = RB.$(this);
     var model = field.parents('.model').first().data('this');
     var j = model.$;
@@ -210,7 +222,7 @@ RB.Model = RB.Object.create({
   },
   
   isNew: function(){
-    return this.getID()=="";
+    return !(this.getID());
   },
 
   markError: function(){
@@ -227,7 +239,7 @@ RB.Model = RB.Object.create({
 
   // Override this method to change the dialog title
   newDialogTitle: function(){
-    return "New " + this.getType()
+    return "New " + this.getType();
   },
     
   open: function(){
@@ -240,7 +252,7 @@ RB.Model = RB.Object.create({
 
   refresh: function(obj){
     this.$.html(obj.$.html());
-  
+    this.$[0].className = obj.$[0].className; //this.$.attr('class', obj.$.attr('class'));
     if(obj.isClosed()){
       this.close();
     } else {
@@ -254,7 +266,7 @@ RB.Model = RB.Object.create({
   },
 
   saveDirectives: function(){
-    throw "Child object must implement saveDirectives()"
+    throw "Child object must implement saveDirectives()";
   },
 
   saveEdits: function(){
@@ -267,7 +279,7 @@ RB.Model = RB.Object.create({
       editor = RB.$(this);
       fieldName = editor.attr('name');
       if(this.type.match(/select/)){
-        j.children('div.' + fieldName).children('.v').text(editor.val())
+        j.children('div.' + fieldName).children('.v').text(editor.val());
         j.children('div.' + fieldName).children('.t').text(editor.children(':selected').text());
       // } else if(this.type.match(/textarea/)){
       //   this.setValue('div.' + fieldName + ' .textile', editors[ii].value);
@@ -287,14 +299,30 @@ RB.Model = RB.Object.create({
 
     self.unmarkError();
     self.markSaving();
+    
     RB.ajax({
-      type: "POST",
-      url: saveDir.url,
-      data: saveDir.data,
-      success   : function(d,t,x){ self.afterSave(d,t,x) },
-      error     : function(x,t,e){ self.error(x,t,e) }
+       type: "POST",
+       url: saveDir.url,
+       data: saveDir.data,
+       success: function(d, t, x){
+          self.afterSave(d,t,x);
+          self.refreshTooltip(self);
+       },
+       error : function(x,t,e){ self.error(x,t,e); }
     });
+
     self.endEdit();
+    self.$.find('.editors').remove();
+  },
+
+  refreshTooltip: function(model) {
+    if (typeof RB.$.qtipMakeOptions != 'function') {
+        return;
+    }
+    if (typeof model == 'undefined') {
+        model = this;
+    }
+    RB.util.refreshToolTip(model);
   },
   
   unmarkError: function(){

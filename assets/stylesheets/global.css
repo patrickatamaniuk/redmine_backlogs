@@ -1,13 +1,20 @@
 /* GLOBAL */
+html {
+	overflow-y: scroll;
+}
 body{
+  background: none;
   background-color:#FFFFFF;
-  font-family:Verdana, Arial, sans-serif;
-  font-size:1em;
   height:100%;
   margin:0;
   width:100%;
 }
-a{
+.ui-tooltip,
+.rb-toolbar, .rb-main {
+  font-family:Verdana, Arial, sans-serif;
+  font-size:12px;
+}
+a, a:link, a:visited {
   color:#CC0000;
   text-decoration:none;
 }
@@ -22,28 +29,30 @@ a:hover{
   overflow:hidden;
   position:relative;
   width:100%;
+  box-shadow: 0 3px 4px #A0A0A0;
+  z-index:1000;
 }
 #toolbar .breadcrumbs{
-  bottom:5px;
-  display:block;
-  font-size:0.8em;
-  left:10px;
-  position:absolute;
+  float: left;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 #toolbar .breadcrumbs .home{
   font-size:1.2em;
 }
 #toolbar .breadcrumbs .separator{
-  bottom:2px;
   color: #999999;
-  font-size:0.7em;
+  font-size:0.9em;
   font-weight:bold;
+  padding: 0 .2em;
+}
+#toolbar .userselect{
+  float: left;
   position:relative;
 }
 #toolbar .links{
   bottom:5px;
   display:block;
-  font-size:0.7em;
   right:10px;
   position:absolute;
 }
@@ -62,14 +71,21 @@ body.loading #refresh{
   display:block;
   height:100%;
   width:100%;
+  margin: 0; /*yes, we do!*/
 }
+
+#content {
+  margin:0;
+  padding: 0;
+}
+
 .meta{
   display:none;
 }
 #helpers{
   display:none;
 }
-/* 
+/*
   .editor is the classname for field editors of sprint,
   story, task, impediment. These field editors get created
   at runtime whenever any of the above models are edited.
@@ -79,4 +95,33 @@ body.loading #refresh{
 }
 .ui-dialog .editor{
   display:block;
+}
+
+ul.ui-sortable {
+    min-height: 20px!important;
+}
+.tooltip_text{
+  display:none;
+}
+
+
+/* drag-drop effect: disabled dropzones are greyed out */
+.rb-sortable-disabled,
+.ui-sortable-disabled {
+  /*crap browsers*/
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: alpha(opacity=50);
+  -moz-opacity: 0.5;
+  -khtml-opacity: 0.5;
+  /*good browsers*/
+  opacity: 0.5;
+  background-color: #dddddd;
+}
+
+/* redmine header in backlogs page */
+#usability-compat-wrapper {font-size:12px; }
+.w-rb-header-collapsed { height:18px; overflow:hidden; }
+
+#project_quick_jump_box{
+  max-width: 300px;
 }
